@@ -16,8 +16,6 @@
 
 @implementation AppDelegate
 
-@synthesize isNetworkAvailable;
-
 - (void)dealloc
 {
     [_navigationController release];
@@ -45,33 +43,6 @@
     self.navigationController.navigationBarHidden   = YES;
     self.navigationController.navigationBar.hidden  = YES;
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.496f green:0.504 blue:0.52f alpha:1.0f];
-    // Observe the kNetworkReachabilityChangedNotification. When that notification is posted, the
-    // method "reachabilityChanged" will be called.
-    self.isNetworkAvailable = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reachabilityChanged:)
-                                                 name:kReachabilityChangedNotification
-                                               object:nil];
-    
-    Reachability * reach = [Reachability reachabilityWithHostname:@"www.apple.com"];
-    
-    reach.reachableBlock = ^(Reachability * reachability)
-    {
-        dispatch_async(dispatch_get_main_queue(), ^
-        {
-            self.isNetworkAvailable = YES;
-        });
-    };
-    
-    reach.unreachableBlock = ^(Reachability * reachability)
-    {
-        dispatch_async(dispatch_get_main_queue(), ^
-        {
-            self.isNetworkAvailable = YES;
-        });
-    };
-    
-    [reach startNotifier];
     
     [self.window makeKeyAndVisible];
     return YES;
@@ -104,22 +75,20 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
-#pragma mark - check network
+#pragma mark - Check network
 
 #pragma mark - reachabilityChanged
 
--(void)reachabilityChanged:(NSNotification*)note
+-(BOOL)reachable
 {
-    Reachability * reach = [note object];
-    
-    if([reach isReachable])
+    Reachability *r = [Reachability reachabilityWithHostname:@"www.apple.com"];
+    NetworkStatus internetStatus = [r currentReachabilityStatus];
+    if(internetStatus == NotReachable)
     {
-        self.isNetworkAvailable = YES;
+        return NO;
+        
     }
-    else
-    {
-        self.isNetworkAvailable = NO;
-    }
+    return YES;
 }
 
 @end

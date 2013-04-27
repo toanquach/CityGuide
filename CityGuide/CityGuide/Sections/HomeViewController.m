@@ -65,7 +65,7 @@
     //
     //      Check Network valid
     //
-    if (UIAppDelegate.isNetworkAvailable)
+    if ([UIAppDelegate reachable])
     {
         //
         //      If you are downloaded

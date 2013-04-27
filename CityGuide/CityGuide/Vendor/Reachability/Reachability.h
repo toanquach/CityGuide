@@ -35,19 +35,6 @@
 #import <ifaddrs.h>
 #import <netdb.h>
 
-/**
- * Does ARC support support GCD objects?
- * It does if the minimum deployment target is iOS 6+ or Mac OS X 8+
- * 
- * @see http://opensource.apple.com/source/libdispatch/libdispatch-228.18/os/object.h
- **/
-#if OS_OBJECT_USE_OBJC
-#define NEEDS_DISPATCH_RETAIN_RELEASE 0
-#else
-#define NEEDS_DISPATCH_RETAIN_RELEASE 1
-#endif
-
-
 extern NSString *const kReachabilityChangedNotification;
 
 typedef enum 
@@ -68,8 +55,12 @@ typedef void (^NetworkUnreachable)(Reachability * reachability);
 @property (nonatomic, copy) NetworkReachable    reachableBlock;
 @property (nonatomic, copy) NetworkUnreachable  unreachableBlock;
 
+@property (nonatomic, assign) SCNetworkReachabilityRef  reachabilityRef;
+@property (nonatomic, assign) dispatch_queue_t          reachabilitySerialQueue;
 
 @property (nonatomic, assign) BOOL reachableOnWWAN;
+
+@property (nonatomic, strong) id reachabilityObject;
 
 +(Reachability*)reachabilityWithHostname:(NSString*)hostname;
 +(Reachability*)reachabilityForInternetConnection;
