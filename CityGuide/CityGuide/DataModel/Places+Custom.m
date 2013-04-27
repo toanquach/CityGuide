@@ -8,6 +8,8 @@
 
 #import "Places+Custom.h"
 #import "CityGuideCoreDataManager.h"
+#import "NSDictionary+EmptyString.h"
+
 #define kEntityName     @"Places"
 
 @implementation Places(Custom)
@@ -38,6 +40,8 @@
     {
         DLog(@"Error: %@", exception.description);
     }
+    
+    return success;
 }
 //
 //      Insert item into database
@@ -59,11 +63,12 @@
         obj = [NSEntityDescription insertNewObjectForEntityForName:kEntityName
                                             inManagedObjectContext:managedObjectContext];
         
+        dict = [dict dictionaryByReplacingNullsWithStrings];
         obj.text = [dict objectForKey:@"text"];
         obj.city = [dict objectForKey:@"city"];
         obj.image = [dict objectForKey:@"image"];
-        obj.latitude = [dict objectForKey:@"latitude"];
-        obj.longitude = [dict objectForKey:@"longitude"];
+        obj.latitude = [NSNumber numberWithDouble:[[dict objectForKey:@"latitude"] doubleValue]];
+        obj.longitude = [NSNumber numberWithDouble:[[dict objectForKey:@"longitude"] doubleValue]];
     }
     @catch (NSException *exception)
     {
@@ -133,6 +138,26 @@
     [list release];
     list = nil;
     return [obj autorelease];
+}
+//
+//      Search with name or city
+//
++ (NSArray *)searchItemWithKey:(NSString *)keyword
+{
+    NSFetchRequest *fetch = [NSFetchRequest fetchRequestWithEntityName:kEntityName];
+    [fetch setFetchBatchSize:20];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text LIKE '%@' OR city LIKE '%@'",keyword,keyword];
+    [fetch setPredicate:predicate];
+    
+    NSArray *list = [[[CityGuideCoreDataManager sharedCityGuideCoreDataManager] managedObjectContext] executeFetchRequest:fetch error:nil];
+    
+    if (list == nil)
+    {
+        return nil;
+    }
+    
+    return [list autorelease];
 }
 
 @end

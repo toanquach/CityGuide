@@ -7,9 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6A68C1DC172AEC200015D2F3 /* Places.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1DB172AEC200015D2F3 /* Places.m */; };
 		6A68C1E0172AEDD50015D2F3 /* CityGuideCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */; };
 		6A68C1E3172AF4580015D2F3 /* Places+Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1E2172AF4570015D2F3 /* Places+Custom.m */; };
+		9A03449B172B766C00042F42 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A03449A172B766C00042F42 /* MBProgressHUD.m */; };
+		9A1A7048172B863300024317 /* NSDictionary+EmptyString.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A7047172B863300024317 /* NSDictionary+EmptyString.m */; };
+		9A1A704B172B87FD00024317 /* Places.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A704A172B87FD00024317 /* Places.m */; };
+		9A1A7050172B901200024317 /* FilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A704E172B901200024317 /* FilterViewController.m */; };
+		9A1A7051172B901200024317 /* FilterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9A1A704F172B901200024317 /* FilterViewController.xib */; };
+		9A1A7055172B941800024317 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A7054172B941800024317 /* Reachability.m */; };
+		9A1A7057172B943600024317 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1A7056172B943600024317 /* SystemConfiguration.framework */; };
+		9A1A7059172B944400024317 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1A7058172B944400024317 /* CFNetwork.framework */; };
+		9A7C14A9172B9BAE00137792 /* down_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A7C14A7172B9BAE00137792 /* down_button.png */; };
+		9A7C14AA172B9BAE00137792 /* up_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A7C14A8172B9BAE00137792 /* up_button.png */; };
 		9ABFCD20172A2FED0022A9C4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ABFCD1F172A2FED0022A9C4 /* UIKit.framework */; };
 		9ABFCD22172A2FED0022A9C4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ABFCD21172A2FED0022A9C4 /* Foundation.framework */; };
 		9ABFCD24172A2FED0022A9C4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ABFCD23172A2FED0022A9C4 /* CoreGraphics.framework */; };
@@ -30,12 +39,25 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		6A68C1DA172AEC200015D2F3 /* Places.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Places.h; sourceTree = "<group>"; };
-		6A68C1DB172AEC200015D2F3 /* Places.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Places.m; sourceTree = "<group>"; };
 		6A68C1DE172AEDD50015D2F3 /* CityGuideCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CityGuideCoreDataManager.h; sourceTree = "<group>"; };
 		6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CityGuideCoreDataManager.m; sourceTree = "<group>"; };
 		6A68C1E1172AF4570015D2F3 /* Places+Custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Places+Custom.h"; sourceTree = "<group>"; };
 		6A68C1E2172AF4570015D2F3 /* Places+Custom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Places+Custom.m"; sourceTree = "<group>"; };
+		9A034499172B766C00042F42 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		9A03449A172B766C00042F42 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		9A1A7046172B863300024317 /* NSDictionary+EmptyString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+EmptyString.h"; sourceTree = "<group>"; };
+		9A1A7047172B863300024317 /* NSDictionary+EmptyString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+EmptyString.m"; sourceTree = "<group>"; };
+		9A1A7049172B87FD00024317 /* Places.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Places.h; sourceTree = "<group>"; };
+		9A1A704A172B87FD00024317 /* Places.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Places.m; sourceTree = "<group>"; };
+		9A1A704D172B901200024317 /* FilterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterViewController.h; sourceTree = "<group>"; };
+		9A1A704E172B901200024317 /* FilterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterViewController.m; sourceTree = "<group>"; };
+		9A1A704F172B901200024317 /* FilterViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FilterViewController.xib; sourceTree = "<group>"; };
+		9A1A7053172B941800024317 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		9A1A7054172B941800024317 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		9A1A7056172B943600024317 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		9A1A7058172B944400024317 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		9A7C14A7172B9BAE00137792 /* down_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = down_button.png; sourceTree = "<group>"; };
+		9A7C14A8172B9BAE00137792 /* up_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = up_button.png; sourceTree = "<group>"; };
 		9ABFCD1C172A2FED0022A9C4 /* CityGuide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CityGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ABFCD1F172A2FED0022A9C4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		9ABFCD21172A2FED0022A9C4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -66,6 +88,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A1A7059172B944400024317 /* CFNetwork.framework in Frameworks */,
+				9A1A7057172B943600024317 /* SystemConfiguration.framework in Frameworks */,
 				9ABFCD9E172A506C0022A9C4 /* CoreData.framework in Frameworks */,
 				9ABFCD9C172A50660022A9C4 /* CoreLocation.framework in Frameworks */,
 				9ABFCD9A172A50600022A9C4 /* MapKit.framework in Frameworks */,
@@ -78,6 +102,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9A1A704C172B8FFA00024317 /* FilterPage */ = {
+			isa = PBXGroup;
+			children = (
+				9A1A704D172B901200024317 /* FilterViewController.h */,
+				9A1A704E172B901200024317 /* FilterViewController.m */,
+				9A1A704F172B901200024317 /* FilterViewController.xib */,
+			);
+			name = FilterPage;
+			sourceTree = "<group>";
+		};
+		9A1A7052172B941800024317 /* Reachability */ = {
+			isa = PBXGroup;
+			children = (
+				9A1A7053172B941800024317 /* Reachability.h */,
+				9A1A7054172B941800024317 /* Reachability.m */,
+			);
+			name = Reachability;
+			path = CityGuide/Vendor/Reachability;
+			sourceTree = SOURCE_ROOT;
+		};
 		9ABFCD13172A2FED0022A9C4 = {
 			isa = PBXGroup;
 			children = (
@@ -98,6 +142,8 @@
 		9ABFCD1E172A2FED0022A9C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9A1A7058172B944400024317 /* CFNetwork.framework */,
+				9A1A7056172B943600024317 /* SystemConfiguration.framework */,
 				9ABFCD9D172A506C0022A9C4 /* CoreData.framework */,
 				9ABFCD9B172A50660022A9C4 /* CoreLocation.framework */,
 				9ABFCD99172A50600022A9C4 /* MapKit.framework */,
@@ -143,6 +189,8 @@
 		9ABFCD45172A32250022A9C4 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				9A7C14A7172B9BAE00137792 /* down_button.png */,
+				9A7C14A8172B9BAE00137792 /* up_button.png */,
 				9ABFCDA1172A53F40022A9C4 /* button01.png */,
 				9ABFCD9F172A51510022A9C4 /* SearchToolbarBackground.png */,
 			);
@@ -159,6 +207,8 @@
 		9ABFCD47172A32250022A9C4 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				9A1A7046172B863300024317 /* NSDictionary+EmptyString.h */,
+				9A1A7047172B863300024317 /* NSDictionary+EmptyString.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -167,8 +217,8 @@
 			isa = PBXGroup;
 			children = (
 				9ABFCDC1172A747E0022A9C4 /* CityGuideModel.xcdatamodeld */,
-				6A68C1DA172AEC200015D2F3 /* Places.h */,
-				6A68C1DB172AEC200015D2F3 /* Places.m */,
+				9A1A7049172B87FD00024317 /* Places.h */,
+				9A1A704A172B87FD00024317 /* Places.m */,
 				6A68C1E1172AF4570015D2F3 /* Places+Custom.h */,
 				6A68C1E2172AF4570015D2F3 /* Places+Custom.m */,
 				6A68C1DE172AEDD50015D2F3 /* CityGuideCoreDataManager.h */,
@@ -195,6 +245,7 @@
 		9ABFCD4B172A32250022A9C4 /* Sections */ = {
 			isa = PBXGroup;
 			children = (
+				9A1A704C172B8FFA00024317 /* FilterPage */,
 				9ABFCD4E172A35310022A9C4 /* HomePage */,
 			);
 			path = Sections;
@@ -203,6 +254,9 @@
 		9ABFCD4C172A32250022A9C4 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				9A1A7052172B941800024317 /* Reachability */,
+				9A034499172B766C00042F42 /* MBProgressHUD.h */,
+				9A03449A172B766C00042F42 /* MBProgressHUD.m */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -283,6 +337,9 @@
 				9ABFCD98172A36E50022A9C4 /* HomeViewController_iPad.xib in Resources */,
 				9ABFCDA0172A51510022A9C4 /* SearchToolbarBackground.png in Resources */,
 				9ABFCDA2172A53F40022A9C4 /* button01.png in Resources */,
+				9A1A7051172B901200024317 /* FilterViewController.xib in Resources */,
+				9A7C14A9172B9BAE00137792 /* down_button.png in Resources */,
+				9A7C14AA172B9BAE00137792 /* up_button.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,9 +354,13 @@
 				9ABFCD30172A2FED0022A9C4 /* AppDelegate.m in Sources */,
 				9ABFCD52172A35880022A9C4 /* HomeViewController.m in Sources */,
 				9ABFCDC3172A747E0022A9C4 /* CityGuideModel.xcdatamodeld in Sources */,
-				6A68C1DC172AEC200015D2F3 /* Places.m in Sources */,
 				6A68C1E0172AEDD50015D2F3 /* CityGuideCoreDataManager.m in Sources */,
 				6A68C1E3172AF4580015D2F3 /* Places+Custom.m in Sources */,
+				9A03449B172B766C00042F42 /* MBProgressHUD.m in Sources */,
+				9A1A7048172B863300024317 /* NSDictionary+EmptyString.m in Sources */,
+				9A1A704B172B87FD00024317 /* Places.m in Sources */,
+				9A1A7050172B901200024317 /* FilterViewController.m in Sources */,
+				9A1A7055172B941800024317 /* Reachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

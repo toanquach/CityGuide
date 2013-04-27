@@ -20,7 +20,8 @@
 //
 #define HOMEDIRECTORY [[NSBundle mainBundle] resourcePath]
 #define DOCUMENTDIRECTORY [NSHomeDirectory() stringByAppendingString:@"/Documents/"]
-#define LIBRARYCACHESDIRECTORY [NSHomeDirectory() stringByAppendingString:@"/Library/Caches/"]
+#define LIBRARYCACHESDIRECTORY ([NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject])
+#define LIBRARYCACHESURL ([NSURL fileURLWithPath:LIBRARYCACHESDIRECTORY isDirectory:YES])
 //
 //  Check Type Device
 //

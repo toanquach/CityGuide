@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import "MBProgressHUD.h"
 
-@interface HomeViewController : UIViewController<MKMapViewDelegate, UISearchBarDelegate>
+@interface HomeViewController : UIViewController<MKMapViewDelegate, UISearchBarDelegate, MBProgressHUDDelegate>
 
 @end

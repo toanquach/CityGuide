@@ -14,4 +14,5 @@
 
 @property (strong, nonatomic) UINavigationController *navigationController;
 
+@property (nonatomic) BOOL isNetworkAvailable;
 @end

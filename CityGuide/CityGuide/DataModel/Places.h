@@ -2,7 +2,7 @@
 //  Places.h
 //  CityGuide
 //
-//  Created by Toan Quach on 4/27/13.
+//  Created by Mac Mini on 4/27/13.
 //  Copyright (c) 2013 Toan.Quach. All rights reserved.
 //
 
@@ -14,8 +14,8 @@
 
 @property (nonatomic, retain) NSString * city;
 @property (nonatomic, retain) NSString * image;
-@property (nonatomic, retain) NSString * latitude;
-@property (nonatomic, retain) NSString * longitude;
+@property (nonatomic, retain) NSNumber * latitude;
+@property (nonatomic, retain) NSNumber * longitude;
 @property (nonatomic, retain) NSString * text;
 
 @end

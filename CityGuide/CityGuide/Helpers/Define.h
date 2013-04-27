@@ -9,6 +9,9 @@
 #ifndef CityGuide_Define_h
 #define CityGuide_Define_h
 
-#define kLink_Places        @"http://m.saritasa.com/testtask/places.json "
+#define kLink_Places        @"http://m.saritasa.com/testtask/places.json"
 
+#define kIsDownloaded       @"isDownloaded"
+
+#define kNoInternetConnection             @"No internet connection, please check your network again."
 #endif

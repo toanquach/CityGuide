@@ -15,8 +15,8 @@
     NSPersistentStoreCoordinator *_persistentStoreCoordinator;
 }
 
-@property (strong, nonatomic) NSURL *storeUrl;
-@property (strong, nonatomic) NSDictionary *localStoreOptions;
+@property (retain, nonatomic) NSURL *storeUrl;
+@property (retain, nonatomic) NSDictionary *localStoreOptions;
 @property (readwrite, strong) NSURL *ubiquityURL;
 @property (assign) BOOL persistenStoreIsReady;
 @property (strong) NSDictionary *tripObjectIDToCompensation;
@@ -65,10 +65,8 @@
         };
         
         self.storeFilename =  @"CityGuideModel.sqlite";
-        NSURL *cachePath = [NSURL URLWithString:LIBRARYCACHESDIRECTORY];
-        self.storeUrl = [cachePath URLByAppendingPathComponent:self.storeFilename];
+        self.storeUrl = [LIBRARYCACHESURL URLByAppendingPathComponent:self.storeFilename];
     }
-    
     return self;
 }
 
@@ -136,7 +134,10 @@
         return _persistentStoreCoordinator;
     }
     
-    
+    if (self.storeUrl == nil)
+    {
+        [LIBRARYCACHESURL URLByAppendingPathComponent:self.storeFilename];
+    }
     // This is the actual store we interact with. It has a separate embedded store which we initialize below.
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];

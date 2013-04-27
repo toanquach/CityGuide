@@ -26,5 +26,9 @@
 //      Search data with key
 //
 + (Places *)searchItemWithLat:(NSString *)latitude andLong:(NSString *)longitude;
+//
+//      Search with name or city
+//
++ (NSArray *)searchItemWithKey:(NSString *)keyword;
 
 @end
