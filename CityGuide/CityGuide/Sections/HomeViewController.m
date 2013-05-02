@@ -9,6 +9,11 @@
 #import "HomeViewController.h"
 #import "Places+Custom.h"
 #import "FilterViewController.h"
+#import "PlaceAnnotation.h"
+#import "DDAnnotation.h"
+#import "DDAnnotationView.h"
+
+#import "Utils.h"
 
 @interface HomeViewController ()
 
@@ -22,12 +27,28 @@
 @property (retain, nonatomic) IBOutlet UISlider *radiusSlider;
 @property (nonatomic) int downUpButtonType;
 @property (retain, nonatomic) IBOutlet UIView *blendView;
+@property (retain, nonatomic) IBOutlet UILabel *filterMileLabel;
+@property (retain, nonatomic) IBOutlet UITableView *filterTableView;
+@property (retain, nonatomic) NSMutableArray *listPlaces;
+@property (retain, nonatomic) NSMutableArray *listFilterArray;
+@property (retain, nonatomic) NSMutableArray *listMapAnnotations;
+@property (nonatomic, strong) CLLocationManager *locationManager;
+@property (retain, nonatomic) IBOutlet UIButton *cancelButton;
+@property (nonatomic, strong) CLGeocoder *geocoder; // support IOS 5
 
+// Method
 - (void)setupView;
 - (void)fetchData:(NSData *)responseData;
+- (void)generatePlacesToMap;
+- (BOOL)centerOnUserAnimated:(BOOL)animated;
+- (void)centerMapOnCoordinate:(CLLocationCoordinate2D)loc withSpan:(float)spanValue animated:(BOOL)animated;
+- (BOOL)checkUserLocationValid;
 
 - (IBAction)filtersButtonClicked:(id)sender;
 - (IBAction)downUpButtonClicked:(id)sender;
+- (IBAction)radiusSliderValueChanged:(id)sender;
+- (void)searchWithText:(NSString *)searchText andRadius:(int)radius;
+- (IBAction)cancelButtonClicked:(id)sender;
 
 @end
 
@@ -64,19 +85,24 @@
     
     [self setupView];
     //
+    //      If you are downloaded
+    //
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    BOOL isDownload = [[userDefault objectForKey:kIsDownloaded] boolValue];
+    if (isDownload) // have download
+    {
+        //
+        //      Add pin to map view
+        //
+        [self generatePlacesToMap];
+        return;
+    }
+    
+    //
     //      Check Network valid
     //
     if ([UIAppDelegate reachable])
     {
-        //
-        //      If you are downloaded
-        //
-        NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
-        BOOL isDownload = [[userDefault objectForKey:kIsDownloaded] boolValue];
-        if (isDownload) // have download
-        {
-            return;
-        }
         //
         // Show the HUD while the provided method executes in a new thread
         //
@@ -115,6 +141,8 @@
 
 - (void)dealloc
 {
+    [_listPlaces release];
+    [_listFilterArray release];
     [_searchContainView release];
     [_searchBarView release];
     [_myMapView release];
@@ -125,6 +153,10 @@
     [_downUpButton release];
     [_radiusSlider release];
     [_blendView release];
+    [_filterMileLabel release];
+    [_filterTableView release];
+    [_listMapAnnotations release];
+    [_cancelButton release];
     [super dealloc];
 }
 
@@ -139,6 +171,12 @@
     [self setDownUpButton:nil];
     [self setRadiusSlider:nil];
     [self setBlendView:nil];
+    [self setFilterMileLabel:nil];
+    [self setFilterTableView:nil];
+    [self setListFilterArray:nil];
+    [self setListPlaces:nil];
+    [self setListMapAnnotations:nil];
+    [self setCancelButton:nil];
     [super viewDidUnload];
 }
 
@@ -146,14 +184,17 @@
 
 - (void)setupView
 {
+    //
     // Load custom background image unto toolbar to match the searchbar.
+    //
     UIImageView *searchToolbarBackground = [[UIImageView alloc] initWithFrame:self.searchContainView.bounds];
     UIImage *backgroundImage = [[UIImage imageNamed:@"SearchToolbarBackground.png"] stretchableImageWithLeftCapWidth:4.0 topCapHeight:0.0];
     searchToolbarBackground.image = backgroundImage;
     [self.searchContainView addSubview:searchToolbarBackground];
     [self.searchContainView sendSubviewToBack:searchToolbarBackground];
-    
+    //
     // custom search bar
+    //
     self.searchBarView.placeholder          = @"Search...";
     self.searchBarView.delegate             = self;
     self.searchBarView.showsCancelButton    = NO;
@@ -163,16 +204,18 @@
     
     [searchToolbarBackground release];
     searchToolbarBackground = nil;
-    
+    //
     // setup loading
     // download data store to CoreData
+    //
     self.hudProgressView = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
 	[self.navigationController.view addSubview:self.hudProgressView];
 	
 	self.hudProgressView.dimBackground = YES;
     self.hudProgressView.labelText = @"Loading...";
-	
+	//
 	// Regiser for HUD callbacks so we can remove it from the window at the right time
+    //
 	self.hudProgressView.delegate = self;
     
     //
@@ -188,8 +231,31 @@
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideSearch:)];
     [self.blendView addGestureRecognizer:tapGesture];
     [tapGesture release];
-    
+    //
+    //      Send view to back
+    //
+    [self.searchContainView sendSubviewToBack:self.cancelButton];
     [self.view sendSubviewToBack:self.blendView];
+    [self.view sendSubviewToBack:self.filterTableView];
+    CGRect frame = self.filterTableView.frame;
+    frame.size.height = frame.size.height - kIPhone_Height_Keyboard + frame.origin.y + 50;
+    self.filterTableView.frame = frame;
+    //
+    //      Set time deplay searching
+    //
+    delaySearchUntilQueryUnchangedForTimeOffset = 0.4 * NSEC_PER_SEC;
+    //
+    //      setup radius slider
+    //
+    self.filterMileLabel.text = @"10000";
+    self.radiusSlider.value = 100;
+    //
+    //  Update location
+    //
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    [self.locationManager startUpdatingLocation];
+    [self centerOnUserAnimated:YES];
 }
 
 
@@ -197,32 +263,77 @@
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded || gestureRecognizer.state == UIGestureRecognizerStateChanged)
     {
-//        [self.myMapView removeGestureRecognizer:gestureRecognizer];
         return;
     }
     
     CGPoint touchPoint = [gestureRecognizer locationInView:self.myMapView];
     CLLocationCoordinate2D touchMapCoordinate = [self.myMapView convertPoint:touchPoint toCoordinateFromView:self.myMapView];
     
+    if ([self.myMapView.annotations count] > 0)
+    {
+        NSMutableArray *listPin = [[NSMutableArray alloc] initWithArray:self.myMapView.annotations];
+        for (int i = 0; i < [listPin count]; i++)
+        {
+            id annotation = [listPin objectAtIndex:i];
+            if ([annotation isKindOfClass:[DDAnnotation class]])
+            {
+                [self.myMapView removeAnnotation:annotation];
+            }
+        }
+        [listPin release];
+    }
+    
     //
     // Place a single pin
     //
-    MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
-    [annotation setCoordinate:touchMapCoordinate];
-    [annotation setTitle:@"Getting address..."]; //You can set the subtitle too
-    [self.myMapView addAnnotation:annotation];
+    DDAnnotation *annotation = [[[DDAnnotation alloc] initWithCoordinate:touchMapCoordinate addressDictionary:nil] autorelease];
+	annotation.title = @"Drag to Move Pin";
+	annotation.subtitle = @"Loading...";
+	[self.self.myMapView addAnnotation:annotation];
     [self.myMapView selectAnnotation:annotation animated:YES];
+    if (!self.geocoder)
+    {
+        self.geocoder = [[CLGeocoder alloc] init];
+    }
+    //
+    //      getting address
+    //
+    if ([UIAppDelegate reachable])
+    {
+        CLLocation *location = [[CLLocation alloc]initWithLatitude:annotation.coordinate.latitude longitude:annotation.coordinate.longitude];
+        [self.geocoder reverseGeocodeLocation:location
+                            completionHandler:^(NSArray *placemarks, NSError *error)
+         {
+             
+             if (error)
+             {
+                 DLog(@"Geocoder return error: %@", error);
+                 return;
+             }
+             
+             if ([placemarks count] == 0)
+             {
+                 return;
+             }
+             
+             CLPlacemark *placemark = [placemarks objectAtIndex:0];
+             NSLog(@"%@",placemark.addressDictionary);
+             NSArray *arr = [placemark.addressDictionary objectForKey:@"FormattedAddressLines"];
+             NSString *address = @"";
+             for (int i = 0; i <[arr count]; i++)
+             {
+                 address = [address stringByAppendingString:[NSString stringWithFormat:@"%@,",[arr objectAtIndex:i]]];
+             }
+             annotation.subtitle = address;
+         }];
+    }
 }
 
 - (void)hideSearch:(id)sender
 {
-    //self.textSearchViewController.tableView.hidden = YES;
     [self.searchBarView setText:nil];
     [self.searchBarView resignFirstResponder];
-    
-    //self.navigationItem.rightBarButtonItem = self.centeringBarButtonItem;
 }
-
 
 - (void)fetchData:(NSData *)responseData
 {
@@ -247,13 +358,141 @@
         [userDefault setBool:YES forKey:kIsDownloaded];
         [userDefault synchronize];
     }
+
+    [self generatePlacesToMap];
     [self.hudProgressView hide:YES];
+}
+
+- (void)generatePlacesToMap
+{
+    self.listMapAnnotations = [[NSMutableArray alloc]init];
+    
+    NSMutableArray *list = [[NSMutableArray alloc] initWithArray:[Places getAllPlaces]];
+    for (int i=0; i < [list count]; i++)
+    {
+        Places *obj = [list objectAtIndex:i];
+        CLLocationCoordinate2D coordinate;
+        coordinate.latitude     = [obj.latitude doubleValue];
+        coordinate.longitude    = [obj.longitude doubleValue];
+        PlaceAnnotation *pin    = [[PlaceAnnotation alloc]initWithCoordinate:coordinate andTitle:obj.text andSubTitle:obj.city];
+        [self.listMapAnnotations addObject:pin];
+        [pin release];
+    }
+    [list release];
+    
+    [self.myMapView addAnnotations:self.listMapAnnotations];
+}
+
+- (void)searchWithText:(NSString *)searchText andRadius:(int)radius
+{
+    NSMutableArray *list = [[NSMutableArray alloc] initWithArray:[Places searchItemWithKey:searchText]];
+    if (list != nil)
+    {
+        if ([list count] > 0)
+        {
+            if ([self checkUserLocationValid] == YES) // User Location Valid
+            {
+                CLLocation *startLocation = [[CLLocation alloc] initWithLatitude:self.myMapView.userLocation.coordinate.latitude longitude:self.myMapView.userLocation.coordinate.longitude];
+                double distanceFilter = [Utils mileToM:[self.filterMileLabel.text intValue]];
+                if (self.listFilterArray == nil)
+                {
+                    self.listFilterArray = [[NSMutableArray alloc] init];
+                }
+                else
+                {
+                    [self.listFilterArray removeAllObjects];
+                }
+                for (int i=0; i<[list count]; i++)
+                {
+                    Places *obj = [list objectAtIndex:i];
+                    
+                    CLLocation *endLocation = [[CLLocation alloc]initWithLatitude:[obj.latitude doubleValue] longitude:[obj.longitude doubleValue]];
+                    double distance = [Utils distanceFromTwoPoint:startLocation andEndPoint:endLocation];
+                    if (distance <= distanceFilter)
+                    {
+                        [self.listFilterArray addObject:obj];
+                    }
+                    
+                    [endLocation release];
+                }
+                [startLocation release];
+            }
+            else
+            {
+                self.listFilterArray = [[NSMutableArray alloc]initWithArray:list];
+            }
+            
+            if ([self.listFilterArray count] > 0)
+            {
+                [self.view bringSubviewToFront:self.filterTableView];
+                [self.filterTableView reloadData];
+            }
+            
+            
+        }
+    }
+    [list release];
+}
+
+- (BOOL)centerOnUserAnimated:(BOOL)animated
+{
+    BOOL userPositionAvailable;
+    
+    CLLocationCoordinate2D userLocation = self.myMapView.userLocation.coordinate;
+    
+    if (!self.myMapView.showsUserLocation ||
+        (( userLocation.latitude == -180 ) && ( userLocation.longitude == -180 )) ||
+        (( userLocation.latitude == 0 ) && ( userLocation.longitude == 0 )))
+    {
+        userPositionAvailable = NO;
+    }
+    else
+    {
+        [self centerMapOnCoordinate:userLocation withSpan:0.06 animated:animated];
+        userPositionAvailable = YES;
+    }
+    
+    return userPositionAvailable;
+}
+
+- (void)centerMapOnCoordinate:(CLLocationCoordinate2D)loc withSpan:(float)spanValue animated:(BOOL)animated
+{
+    MKCoordinateRegion region;
+	region.center = loc;
+	//Set Zoom level using Span
+	MKCoordinateSpan span;
+	span.latitudeDelta = spanValue;
+	span.longitudeDelta = spanValue;
+	region.span = span;
+	
+	[self.myMapView setRegion:region animated:animated];
+}
+
+- (BOOL)checkUserLocationValid
+{
+    BOOL userPositionAvailable;
+    
+    CLLocationCoordinate2D userLocation = self.myMapView.userLocation.coordinate;
+    
+    if (!self.myMapView.showsUserLocation ||
+        (( userLocation.latitude == -180 ) && ( userLocation.longitude == -180 )) ||
+        (( userLocation.latitude == 0 ) && ( userLocation.longitude == 0 )))
+    {
+        userPositionAvailable = NO;
+    }
+    else
+    {
+        userPositionAvailable = YES;
+    }
+    
+    return userPositionAvailable;
 }
 
 #pragma mark - Button Event
 
 - (IBAction)filtersButtonClicked:(id)sender
 {
+    // push filter view
     FilterViewController *viewController = [[FilterViewController alloc] init];
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
@@ -264,7 +503,8 @@
 {
     if (self.downUpButtonType == 0)
     {
-        [UIView animateWithDuration:0.5 animations:^{
+        [UIView animateWithDuration:0.5 animations:^
+        {
             CGRect rect = self.radiusView.frame;
             rect.origin.y = 44;
             self.radiusView.frame = rect;
@@ -295,27 +535,128 @@
     }
 }
 
+- (IBAction)radiusSliderValueChanged:(id)sender
+{
+    NSUInteger index = (NSUInteger)(self.radiusSlider.value + 0.5); // Round the number.
+    [self.radiusSlider setValue:index animated:NO];
+    self.filterMileLabel.text = [NSString stringWithFormat:@"%d",index];
+}
+
+- (IBAction)cancelButtonClicked:(id)sender
+{
+    [self hideSearch:sender];
+}
+
+#pragma mark - CLLocationManager delegate
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    // If user has just accepted using GPS we should center on her position
+    if (status == kCLAuthorizationStatusAuthorized)
+    {
+        // Get rid of locationManager since all other GPS-related
+        // functionality is taken care of by our MKMapView
+        self.locationManager.delegate = nil;
+        self.locationManager = nil;
+    }
+}
+
 #pragma mark - MKMapView delegate
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView didChangeDragState:(MKAnnotationViewDragState)newState fromOldState:(MKAnnotationViewDragState)oldState
+{	
+	if (oldState == MKAnnotationViewDragStateDragging)
+    {
+        if ([annotationView.annotation isKindOfClass:[DDAnnotation class]])
+        {
+            DDAnnotation *annotation = (DDAnnotation *)annotationView.annotation;
+            annotation.subtitle = @"Loading...";
+            
+            if (!self.geocoder)
+            {
+                self.geocoder = [[CLGeocoder alloc] init];
+            }
+            CLLocation *location = [[CLLocation alloc]initWithLatitude:annotation.coordinate.latitude longitude:annotation.coordinate.longitude];
+            [self.geocoder reverseGeocodeLocation:location
+                                completionHandler:^(NSArray *placemarks, NSError *error)
+            {
+                                    
+                if (error)
+                {
+                    DLog(@"Geocoder return error: %@", error);
+                    return;
+                }
+                
+                if ([placemarks count] == 0)
+                {
+                    return;
+                }
+                
+                CLPlacemark *placemark = [placemarks objectAtIndex:0];
+                NSLog(@"%@",placemark.addressDictionary);
+                NSArray *arr = [placemark.addressDictionary objectForKey:@"FormattedAddressLines"];
+                NSString *address = @"";
+                for (int i = 0; i <[arr count]; i++)
+                {
+                    address = [address stringByAppendingString:[NSString stringWithFormat:@"%@,",[arr objectAtIndex:i]]];
+                }
+                annotation.subtitle = address;
+            }];
+
+        }
+	}       // Drag
+}
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
     if(![annotation isKindOfClass:[MKUserLocation class]])
     {
-        static NSString* placeAnnotationIdentifier = @"placeAnnotationIdentifier";
-        
-        MKPinAnnotationView *pinView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:placeAnnotationIdentifier];
-        
-        if (pinView == nil)
+        if ([annotation isKindOfClass:[PlaceAnnotation class]])
         {
-            pinView = [[[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:placeAnnotationIdentifier] autorelease];
+            static NSString* placeAnnotationIdentifier = @"placeAnnotationIdentifier";
+            
+            MKPinAnnotationView *pinView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:placeAnnotationIdentifier];
+            
+            if (pinView == nil)
+            {
+                pinView = [[[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:placeAnnotationIdentifier] autorelease];
+                UIImageView *leftImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"starIcon.png"]];
+                leftImgView.frame = CGRectMake(0, 0, 20, 20);
+                pinView.leftCalloutAccessoryView = leftImgView;
+                [leftImgView release];
+            }
+            
+            pinView.pinColor = MKPinAnnotationColorGreen;
+            pinView.animatesDrop = NO;
+            pinView.canShowCallout = YES;
+            pinView.draggable = NO;
+            //[pinView setSelected:YES animated:YES];
+            return pinView;
         }
-        
-        pinView.pinColor = MKPinAnnotationColorRed;
-        pinView.animatesDrop = YES;
-        pinView.canShowCallout = YES;
-        pinView.draggable = YES;
-        [pinView setSelected:YES animated:YES];
-        return pinView;
+        else if ([annotation isKindOfClass:[DDAnnotation class]])
+        {
+            static NSString * const kPinAnnotationIdentifier = @"PinIdentifier";
+            MKAnnotationView *draggablePinView = [mapView dequeueReusableAnnotationViewWithIdentifier:kPinAnnotationIdentifier];
+            
+            if (draggablePinView)
+            {
+                draggablePinView.annotation = annotation;
+            } else
+            {
+                // Use class method to create DDAnnotationView (on iOS 3) or built-in draggble MKPinAnnotationView (on iOS 4).
+                draggablePinView = [DDAnnotationView annotationViewWithAnnotation:annotation reuseIdentifier:kPinAnnotationIdentifier mapView:mapView];
+				
+                if ([draggablePinView isKindOfClass:[DDAnnotationView class]])
+                {
+                    // draggablePinView is DDAnnotationView on iOS 3.
+                } else
+                {
+                    // draggablePinView instance will be built-in draggable MKPinAnnotationView when running on iOS 4.
+                }
+            }		
+            
+            return draggablePinView;
+
+        }
     }
     return nil;
 }
@@ -333,75 +674,88 @@
 - (void)searchBar:(UISearchBar *)searchBarSelector textDidChange:(NSString *)searchText
 {
     [self.view bringSubviewToFront:self.blendView];
-//    //[self.textSearchViewController.tableView scrollRectToVisible:CGRectMake(0, 0, 320, 10) animated:NO];
-//   // self.dataProvider.textFilter = searchText;
-//    
-//    //if([self.textSearchViewController.data count] == 0 && !self.textSearchViewController.shouldShowTable)
-//    {
-//        [self.view bringSubviewToFront:self.blendView];
-//    }
-//    else
-//    {
-//        [self.view bringSubviewToFront:self.textSearchViewController.view];
-//    }
-//    
-//    self.textSearchViewController.shouldShowTable = ([self.searchBar.text length] != 0);
-//    
-//    [self.textSearchViewController.tableView reloadData];
+    //
+    // waiting when user pressing
+    //
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delaySearchUntilQueryUnchangedForTimeOffset);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+    {
+        //NSLog(@"Search With Key: %@",searchText);
+        [self searchWithText:searchText andRadius:[self.filterMileLabel.text intValue]];
+    });
 }
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
-    //[self.dataProvider filterContent:self.mapView];
-    
-    //self.textSearchViewController.tableView.hidden = NO;
-    
     [[self searchBarView] setText:@""];
     [self.view bringSubviewToFront:self.blendView];
     [self.view bringSubviewToFront:self.searchBarView];
+    [self.searchContainView bringSubviewToFront:self.cancelButton];
     return YES;
 }
 
 - (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
 {
-//    self.navigationItem.rightBarButtonItem = nil;
-//    
-//    [UIView animateWithDuration:0.3
-//                          delay:0.0
-//                        options:UIViewAnimationOptionAllowUserInteraction
-//                     animations:^
-//    {
-//                         
-//         CGRect searchContainerRect = self.searchContainerView.frame;
-//         searchContainerRect.origin.y = self.view.frame.size.height - searchContainerRect.size.height;
-//         self.searchContainerView.frame = searchContainerRect;
-//         
-//         [self adjustSearchBarWidth];
-//         [self.searchBar layoutSubviews];
-//         
-//         CGRect filterButtonRect = self.filterButton.frame;
-//         filterButtonRect.origin.x = self.searchContainerView.frame.size.width - self.filterButton.bounds.size.width - 5.0;
-//         self.filterButton.frame = filterButtonRect;
-//         
-//         CGRect blendViewRect = self.blendView.frame;
-//         blendViewRect.origin.y = self.view.frame.size.height;
-//         self.blendView.frame = blendViewRect;
-//     }completion:^(BOOL finish){
-//         
-//         [self.view sendSubviewToBack:self.textSearchViewController.view];
-//         [self.view sendSubviewToBack:self.blendView];
-//     }];
-    
     [self.view sendSubviewToBack:self.blendView];
+    [self.view sendSubviewToBack:self.filterTableView];
+    [self.searchContainView sendSubviewToBack:self.cancelButton];
     return YES;
 }
 
+#pragma mark - UITable View Delegate
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.listFilterArray count];
+}
 
+// Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
+// Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
 
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *cellIdentifier = @"cellIdentifier";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (cell == nil)
+    {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier] autorelease];
+    }
+    Places *obj = [self.listFilterArray objectAtIndex:indexPath.row];
+    cell.textLabel.text = obj.text;
+    cell.detailTextLabel.text = obj.city;
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:14.0];
+    cell.detailTextLabel.font = [UIFont italicSystemFontOfSize:14.0];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    
+    return cell;
+}
 
-
-
-
+//
+// Called after the user changes the selection.
+//
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Places *obj = [self.listFilterArray objectAtIndex:indexPath.row];
+    CLLocationCoordinate2D coordinate;
+    coordinate.latitude = [obj.latitude doubleValue];
+    coordinate.longitude = [obj.longitude doubleValue];
+    //pan (and zoom) to station
+    [self centerMapOnCoordinate:coordinate withSpan:.06 animated:YES];
+    [self.searchBarView resignFirstResponder];
+    for (int i = 0 ; i < [self.myMapView.annotations count]; i++)
+    {
+        id pin = [self.myMapView.annotations objectAtIndex:i];
+        
+        if ([pin isKindOfClass:[PlaceAnnotation class]])
+        {
+            PlaceAnnotation *pinC = (PlaceAnnotation *)pin;
+            if (pinC.coordinate.latitude == coordinate.latitude && pinC.coordinate.longitude == coordinate.longitude)
+            {
+                [self.myMapView selectAnnotation:pin animated:YES];
+                break;
+            }
+        }
+    }
+}
 
 @end

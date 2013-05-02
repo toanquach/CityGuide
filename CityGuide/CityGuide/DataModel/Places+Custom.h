@@ -30,5 +30,9 @@
 //      Search with name or city
 //
 + (NSArray *)searchItemWithKey:(NSString *)keyword;
+//
+//      Get all place
+//
++ (NSArray *)getAllPlaces;
 
 @end

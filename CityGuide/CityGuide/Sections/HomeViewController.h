@@ -10,6 +10,8 @@
 #import <MapKit/MapKit.h>
 #import "MBProgressHUD.h"
 
-@interface HomeViewController : UIViewController<MKMapViewDelegate, UISearchBarDelegate, MBProgressHUDDelegate>
-
+@interface HomeViewController : UIViewController<MKMapViewDelegate, UISearchBarDelegate, MBProgressHUDDelegate, UITableViewDataSource, UITableViewDelegate, CLLocationManagerDelegate>
+{
+    dispatch_time_t delaySearchUntilQueryUnchangedForTimeOffset;
+}
 @end

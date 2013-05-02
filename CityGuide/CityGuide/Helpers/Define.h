@@ -14,4 +14,9 @@
 #define kIsDownloaded       @"isDownloaded"
 
 #define kNoInternetConnection             @"No internet connection, please check your network again."
+
+#define kMilesToKm                  1.609344
+
+#define kIPhone_Height_Keyboard     216
+
 #endif

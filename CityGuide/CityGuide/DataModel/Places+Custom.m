@@ -68,7 +68,7 @@
         obj.city = [dict objectForKey:@"city"];
         obj.image = [dict objectForKey:@"image"];
         obj.latitude = [NSNumber numberWithDouble:[[dict objectForKey:@"latitude"] doubleValue]];
-        obj.longitude = [NSNumber numberWithDouble:[[dict objectForKey:@"longitude"] doubleValue]];
+        obj.longitude = [NSNumber numberWithDouble:[[dict objectForKey:@"longtitude"] doubleValue]];
     }
     @catch (NSException *exception)
     {
@@ -144,11 +144,29 @@
 //
 + (NSArray *)searchItemWithKey:(NSString *)keyword
 {
+    NSArray *list = nil;
     NSFetchRequest *fetch = [NSFetchRequest fetchRequestWithEntityName:kEntityName];
     [fetch setFetchBatchSize:20];
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text LIKE '%@' OR city LIKE '%@'",keyword,keyword];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text CONTAINS[cd] %@ or city CONTAINS[cd] %@", keyword,keyword];//[NSPredicate predicateWithFormat:@"text LIKE '%@'",keyword];
     [fetch setPredicate:predicate];
+    
+    list = [[[CityGuideCoreDataManager sharedCityGuideCoreDataManager] managedObjectContext] executeFetchRequest:fetch error:nil];
+    
+    if (list == nil)
+    {
+        return nil;
+    }
+    
+    return [list autorelease];
+}
+//
+//      Get all place
+//
++ (NSArray *)getAllPlaces
+{
+    NSFetchRequest *fetch = [NSFetchRequest fetchRequestWithEntityName:kEntityName];
+    [fetch setFetchBatchSize:20];
     
     NSArray *list = [[[CityGuideCoreDataManager sharedCityGuideCoreDataManager] managedObjectContext] executeFetchRequest:fetch error:nil];
     
