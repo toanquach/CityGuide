@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6A1F9AB2172E75A900A036E3 /* PlaceAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A1F9AB1172E75A900A036E3 /* PlaceAnnotation.m */; };
 		6A68C1E0172AEDD50015D2F3 /* CityGuideCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */; };
 		6A68C1E3172AF4580015D2F3 /* Places+Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1E2172AF4570015D2F3 /* Places+Custom.m */; };
 		9A03449B172B766C00042F42 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A03449A172B766C00042F42 /* MBProgressHUD.m */; };
@@ -39,6 +40,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6A1F9AB0172E75A900A036E3 /* PlaceAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceAnnotation.h; sourceTree = "<group>"; };
+		6A1F9AB1172E75A900A036E3 /* PlaceAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceAnnotation.m; sourceTree = "<group>"; };
 		6A68C1DE172AEDD50015D2F3 /* CityGuideCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CityGuideCoreDataManager.h; sourceTree = "<group>"; };
 		6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CityGuideCoreDataManager.m; sourceTree = "<group>"; };
 		6A68C1E1172AF4570015D2F3 /* Places+Custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Places+Custom.h"; sourceTree = "<group>"; };
@@ -275,6 +278,8 @@
 				9ABFCD50172A35880022A9C4 /* HomeViewController.m */,
 				9ABFCD51172A35880022A9C4 /* HomeViewController.xib */,
 				9ABFCD97172A36E50022A9C4 /* HomeViewController_iPad.xib */,
+				6A1F9AB0172E75A900A036E3 /* PlaceAnnotation.h */,
+				6A1F9AB1172E75A900A036E3 /* PlaceAnnotation.m */,
 			);
 			name = HomePage;
 			sourceTree = "<group>";
@@ -361,6 +366,7 @@
 				9A1A704B172B87FD00024317 /* Places.m in Sources */,
 				9A1A7050172B901200024317 /* FilterViewController.m in Sources */,
 				9A1A7055172B941800024317 /* Reachability.m in Sources */,
+				6A1F9AB2172E75A900A036E3 /* PlaceAnnotation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

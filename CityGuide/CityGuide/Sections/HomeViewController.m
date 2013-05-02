@@ -21,6 +21,7 @@
 @property (retain, nonatomic) IBOutlet UIButton *downUpButton;
 @property (retain, nonatomic) IBOutlet UISlider *radiusSlider;
 @property (nonatomic) int downUpButtonType;
+@property (retain, nonatomic) IBOutlet UIView *blendView;
 
 - (void)setupView;
 - (void)fetchData:(NSData *)responseData;
@@ -107,6 +108,9 @@
     [super viewWillAppear:YES];
     self.navigationController.navigationBarHidden   = YES;
     self.navigationController.navigationBar.hidden  = YES;
+    
+    MKCircle *circle = [MKCircle circleWithCenterCoordinate:self.myMapView.userLocation.coordinate radius:1000];
+    [self.myMapView addOverlay:circle];
 }
 
 - (void)dealloc
@@ -120,6 +124,7 @@
     [_radiusView release];
     [_downUpButton release];
     [_radiusSlider release];
+    [_blendView release];
     [super dealloc];
 }
 
@@ -133,6 +138,7 @@
     [self setRadiusView:nil];
     [self setDownUpButton:nil];
     [self setRadiusSlider:nil];
+    [self setBlendView:nil];
     [super viewDidUnload];
 }
 
@@ -152,7 +158,7 @@
     self.searchBarView.delegate             = self;
     self.searchBarView.showsCancelButton    = NO;
     self.searchBarView.backgroundImage      = backgroundImage;
-    
+    self.searchBarView.text = @"";
     [self.searchBarView resignFirstResponder];
     
     [searchToolbarBackground release];
@@ -168,54 +174,55 @@
 	
 	// Regiser for HUD callbacks so we can remove it from the window at the right time
 	self.hudProgressView.delegate = self;
+    
+    //
+    //      Add gesture on mkMapView
+    //
+    UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressOnMapView:)];
+    longPressGesture.minimumPressDuration = 1.0;
+    [self.myMapView addGestureRecognizer:longPressGesture];
+    [longPressGesture release];
+    //
+    //      Add gesture to blend view
+    //
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideSearch:)];
+    [self.blendView addGestureRecognizer:tapGesture];
+    [tapGesture release];
+    
+    [self.view sendSubviewToBack:self.blendView];
 }
 
-#pragma mark - Button Event
 
-- (IBAction)filtersButtonClicked:(id)sender
+- (void)longPressOnMapView:(UIGestureRecognizer *)gestureRecognizer
 {
-    FilterViewController *viewController = [[FilterViewController alloc] init];
-    [self.navigationController pushViewController:viewController animated:YES];
-    [viewController release];
-    viewController = nil;
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded || gestureRecognizer.state == UIGestureRecognizerStateChanged)
+    {
+//        [self.myMapView removeGestureRecognizer:gestureRecognizer];
+        return;
+    }
+    
+    CGPoint touchPoint = [gestureRecognizer locationInView:self.myMapView];
+    CLLocationCoordinate2D touchMapCoordinate = [self.myMapView convertPoint:touchPoint toCoordinateFromView:self.myMapView];
+    
+    //
+    // Place a single pin
+    //
+    MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+    [annotation setCoordinate:touchMapCoordinate];
+    [annotation setTitle:@"Getting address..."]; //You can set the subtitle too
+    [self.myMapView addAnnotation:annotation];
+    [self.myMapView selectAnnotation:annotation animated:YES];
 }
 
-- (IBAction)downUpButtonClicked:(id)sender
+- (void)hideSearch:(id)sender
 {
-    if (self.downUpButtonType == 0)
-    {
-        [UIView animateWithDuration:0.5 animations:^{
-            CGRect rect = self.radiusView.frame;
-            rect.origin.y = 44;
-            self.radiusView.frame = rect;
-            
-            rect = self.downUpButton.frame;
-            rect.origin.y = self.radiusView.frame.origin.y + self.radiusView.frame.size.height;
-            self.downUpButton.frame = rect;
-        }];
-        // slider down
-        self.downUpButtonType = 1;
-        
-        [self.downUpButton setBackgroundImage:[UIImage imageNamed:@"up_button.png"] forState:UIControlStateNormal];
-    }
-    else
-    {
-        [UIView animateWithDuration:0.5 animations:^{
-            CGRect rect = self.downUpButton.frame;
-            rect.origin.y = 44;
-            self.downUpButton.frame = rect;
-            
-            rect = self.radiusView.frame;
-            rect.origin.y = 0;
-            self.radiusView.frame = rect;
-            
-        }];        //slider up
-        self.downUpButtonType = 0;
-        [self.downUpButton setBackgroundImage:[UIImage imageNamed:@"down_button.png"] forState:UIControlStateNormal];
-    }
+    //self.textSearchViewController.tableView.hidden = YES;
+    [self.searchBarView setText:nil];
+    [self.searchBarView resignFirstResponder];
+    
+    //self.navigationItem.rightBarButtonItem = self.centeringBarButtonItem;
 }
 
-#pragma mark - util
 
 - (void)fetchData:(NSData *)responseData
 {
@@ -242,6 +249,159 @@
     }
     [self.hudProgressView hide:YES];
 }
+
+#pragma mark - Button Event
+
+- (IBAction)filtersButtonClicked:(id)sender
+{
+    FilterViewController *viewController = [[FilterViewController alloc] init];
+    [self.navigationController pushViewController:viewController animated:YES];
+    [viewController release];
+    viewController = nil;
+}
+
+- (IBAction)downUpButtonClicked:(id)sender
+{
+    if (self.downUpButtonType == 0)
+    {
+        [UIView animateWithDuration:0.5 animations:^{
+            CGRect rect = self.radiusView.frame;
+            rect.origin.y = 44;
+            self.radiusView.frame = rect;
+            
+            rect = self.downUpButton.frame;
+            rect.origin.y = self.radiusView.frame.origin.y + self.radiusView.frame.size.height - 2;
+            self.downUpButton.frame = rect;
+        }];
+        // slider down
+        self.downUpButtonType = 1;
+        
+        [self.downUpButton setBackgroundImage:[UIImage imageNamed:@"up_button.png"] forState:UIControlStateNormal];
+    }
+    else
+    {
+        [UIView animateWithDuration:0.5 animations:^{
+            CGRect rect = self.downUpButton.frame;
+            rect.origin.y = 42;
+            self.downUpButton.frame = rect;
+            
+            rect = self.radiusView.frame;
+            rect.origin.y = 0;
+            self.radiusView.frame = rect;
+            
+        }];        //slider up
+        self.downUpButtonType = 0;
+        [self.downUpButton setBackgroundImage:[UIImage imageNamed:@"down_button.png"] forState:UIControlStateNormal];
+    }
+}
+
+#pragma mark - MKMapView delegate
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
+{
+    if(![annotation isKindOfClass:[MKUserLocation class]])
+    {
+        static NSString* placeAnnotationIdentifier = @"placeAnnotationIdentifier";
+        
+        MKPinAnnotationView *pinView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:placeAnnotationIdentifier];
+        
+        if (pinView == nil)
+        {
+            pinView = [[[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:placeAnnotationIdentifier] autorelease];
+        }
+        
+        pinView.pinColor = MKPinAnnotationColorRed;
+        pinView.animatesDrop = YES;
+        pinView.canShowCallout = YES;
+        pinView.draggable = YES;
+        [pinView setSelected:YES animated:YES];
+        return pinView;
+    }
+    return nil;
+}
+
+- (MKOverlayView *)mapView:(MKMapView *)map viewForOverlay:(id <MKOverlay>)overlay
+{
+    MKCircleView *circleView = [[MKCircleView alloc] initWithOverlay:overlay];
+    circleView.strokeColor = [UIColor redColor];
+    circleView.fillColor = [[UIColor redColor] colorWithAlphaComponent:0.4];
+    return [circleView autorelease];
+}
+
+#pragma mark - SearchBar Delegate methods
+
+- (void)searchBar:(UISearchBar *)searchBarSelector textDidChange:(NSString *)searchText
+{
+    [self.view bringSubviewToFront:self.blendView];
+//    //[self.textSearchViewController.tableView scrollRectToVisible:CGRectMake(0, 0, 320, 10) animated:NO];
+//   // self.dataProvider.textFilter = searchText;
+//    
+//    //if([self.textSearchViewController.data count] == 0 && !self.textSearchViewController.shouldShowTable)
+//    {
+//        [self.view bringSubviewToFront:self.blendView];
+//    }
+//    else
+//    {
+//        [self.view bringSubviewToFront:self.textSearchViewController.view];
+//    }
+//    
+//    self.textSearchViewController.shouldShowTable = ([self.searchBar.text length] != 0);
+//    
+//    [self.textSearchViewController.tableView reloadData];
+}
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
+{
+    //[self.dataProvider filterContent:self.mapView];
+    
+    //self.textSearchViewController.tableView.hidden = NO;
+    
+    [[self searchBarView] setText:@""];
+    [self.view bringSubviewToFront:self.blendView];
+    [self.view bringSubviewToFront:self.searchBarView];
+    return YES;
+}
+
+- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
+{
+//    self.navigationItem.rightBarButtonItem = nil;
+//    
+//    [UIView animateWithDuration:0.3
+//                          delay:0.0
+//                        options:UIViewAnimationOptionAllowUserInteraction
+//                     animations:^
+//    {
+//                         
+//         CGRect searchContainerRect = self.searchContainerView.frame;
+//         searchContainerRect.origin.y = self.view.frame.size.height - searchContainerRect.size.height;
+//         self.searchContainerView.frame = searchContainerRect;
+//         
+//         [self adjustSearchBarWidth];
+//         [self.searchBar layoutSubviews];
+//         
+//         CGRect filterButtonRect = self.filterButton.frame;
+//         filterButtonRect.origin.x = self.searchContainerView.frame.size.width - self.filterButton.bounds.size.width - 5.0;
+//         self.filterButton.frame = filterButtonRect;
+//         
+//         CGRect blendViewRect = self.blendView.frame;
+//         blendViewRect.origin.y = self.view.frame.size.height;
+//         self.blendView.frame = blendViewRect;
+//     }completion:^(BOOL finish){
+//         
+//         [self.view sendSubviewToBack:self.textSearchViewController.view];
+//         [self.view sendSubviewToBack:self.blendView];
+//     }];
+    
+    [self.view sendSubviewToBack:self.blendView];
+    return YES;
+}
+
+
+
+
+
+
+
 
 
 @end
