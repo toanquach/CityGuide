@@ -13,5 +13,6 @@
 @interface HomeViewController : UIViewController<MKMapViewDelegate, UISearchBarDelegate, MBProgressHUDDelegate, UITableViewDataSource, UITableViewDelegate, CLLocationManagerDelegate>
 {
     dispatch_time_t delaySearchUntilQueryUnchangedForTimeOffset;
+    MKCircle *circle;
 }
 @end

@@ -12,8 +12,8 @@
 #import "PlaceAnnotation.h"
 #import "DDAnnotation.h"
 #import "DDAnnotationView.h"
-
 #import "Utils.h"
+#import "DetailAnnotationViewController.h"
 
 @interface HomeViewController ()
 
@@ -29,12 +29,12 @@
 @property (retain, nonatomic) IBOutlet UIView *blendView;
 @property (retain, nonatomic) IBOutlet UILabel *filterMileLabel;
 @property (retain, nonatomic) IBOutlet UITableView *filterTableView;
-@property (retain, nonatomic) NSMutableArray *listPlaces;
 @property (retain, nonatomic) NSMutableArray *listFilterArray;
 @property (retain, nonatomic) NSMutableArray *listMapAnnotations;
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (retain, nonatomic) IBOutlet UIButton *cancelButton;
 @property (nonatomic, strong) CLGeocoder *geocoder; // support IOS 5
+@property (retain, nonatomic) IBOutlet UIButton *userLocationButton;
 
 // Method
 - (void)setupView;
@@ -43,12 +43,13 @@
 - (BOOL)centerOnUserAnimated:(BOOL)animated;
 - (void)centerMapOnCoordinate:(CLLocationCoordinate2D)loc withSpan:(float)spanValue animated:(BOOL)animated;
 - (BOOL)checkUserLocationValid;
+- (void)searchWithText:(NSString *)searchText andRadius:(int)radius;
 
 - (IBAction)filtersButtonClicked:(id)sender;
 - (IBAction)downUpButtonClicked:(id)sender;
 - (IBAction)radiusSliderValueChanged:(id)sender;
-- (void)searchWithText:(NSString *)searchText andRadius:(int)radius;
 - (IBAction)cancelButtonClicked:(id)sender;
+- (IBAction)userLocationButtonClicked:(id)sender;
 
 @end
 
@@ -57,7 +58,8 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
+    if (self)
+    {
         // Custom initialization
     }
     return self;
@@ -92,7 +94,7 @@
     if (isDownload) // have download
     {
         //
-        //      Add pin to map view
+        //      Add list pin to map view
         //
         [self generatePlacesToMap];
         return;
@@ -108,12 +110,12 @@
         //
         [self.hudProgressView show:YES];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
-       {
+        {
            NSURL *url = [[NSURL alloc]initWithString:kLink_Places];
            NSData* data = [NSData dataWithContentsOfURL:url];
            [self performSelectorOnMainThread:@selector(fetchData:) withObject:data waitUntilDone:YES];
            [url release];
-       });
+        });
     }
     else
     {
@@ -134,14 +136,11 @@
     [super viewWillAppear:YES];
     self.navigationController.navigationBarHidden   = YES;
     self.navigationController.navigationBar.hidden  = YES;
-    
-    MKCircle *circle = [MKCircle circleWithCenterCoordinate:self.myMapView.userLocation.coordinate radius:1000];
-    [self.myMapView addOverlay:circle];
 }
 
 - (void)dealloc
 {
-    [_listPlaces release];
+    [_geocoder release];
     [_listFilterArray release];
     [_searchContainView release];
     [_searchBarView release];
@@ -157,6 +156,7 @@
     [_filterTableView release];
     [_listMapAnnotations release];
     [_cancelButton release];
+    [_userLocationButton release];
     [super dealloc];
 }
 
@@ -174,9 +174,10 @@
     [self setFilterMileLabel:nil];
     [self setFilterTableView:nil];
     [self setListFilterArray:nil];
-    [self setListPlaces:nil];
+    [self setGeocoder:nil];
     [self setListMapAnnotations:nil];
     [self setCancelButton:nil];
+    [self setUserLocationButton:nil];
     [super viewDidUnload];
 }
 
@@ -325,6 +326,7 @@
                  address = [address stringByAppendingString:[NSString stringWithFormat:@"%@,",[arr objectAtIndex:i]]];
              }
              annotation.subtitle = address;
+             annotation.dictAddress = [placemark.addressDictionary retain];
          }];
     }
 }
@@ -448,7 +450,7 @@
     }
     else
     {
-        [self centerMapOnCoordinate:userLocation withSpan:0.06 animated:animated];
+        [self centerMapOnCoordinate:userLocation withSpan:0.006 animated:animated];
         userPositionAvailable = YES;
     }
     
@@ -540,6 +542,10 @@
     NSUInteger index = (NSUInteger)(self.radiusSlider.value + 0.5); // Round the number.
     [self.radiusSlider setValue:index animated:NO];
     self.filterMileLabel.text = [NSString stringWithFormat:@"%d",index];
+    
+    [self.myMapView removeOverlays:self.myMapView.overlays];
+    circle = [MKCircle circleWithCenterCoordinate:self.myMapView.userLocation.coordinate radius:[Utils mileToM:index]];
+    [self.myMapView addOverlay:circle];
 }
 
 - (IBAction)cancelButtonClicked:(id)sender
@@ -547,7 +553,32 @@
     [self hideSearch:sender];
 }
 
+- (IBAction)userLocationButtonClicked:(id)sender
+{
+    [self centerOnUserAnimated:YES];
+}
+
 #pragma mark - CLLocationManager delegate
+
+- (void)locationManager:(CLLocationManager *)manager
+	didUpdateToLocation:(CLLocation *)newLocation
+		   fromLocation:(CLLocation *)oldLocation
+{
+    DLog(@"Success: ");
+    [self centerOnUserAnimated:YES];
+}
+
+/*
+ *  locationManager:didFailWithError:
+ *
+ *  Discussion:
+ *    Invoked when an error has occurred. Error types are defined in "CLError.h".
+ */
+- (void)locationManager:(CLLocationManager *)manager
+       didFailWithError:(NSError *)error
+{
+    DLog(@"Erorr: %@",error.description);
+}
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
@@ -558,6 +589,7 @@
         // functionality is taken care of by our MKMapView
         self.locationManager.delegate = nil;
         self.locationManager = nil;
+        [self centerOnUserAnimated:YES];
     }
 }
 
@@ -600,6 +632,7 @@
                     address = [address stringByAppendingString:[NSString stringWithFormat:@"%@,",[arr objectAtIndex:i]]];
                 }
                 annotation.subtitle = address;
+                annotation.dictAddress = [placemark.addressDictionary retain];
             }];
 
         }
@@ -654,11 +687,25 @@
                 }
             }		
             
+            draggablePinView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+            
             return draggablePinView;
 
         }
     }
     return nil;
+}
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+{
+    if ([view.annotation isKindOfClass:[DDAnnotation class]])
+    {
+        DetailAnnotationViewController *viewController = [[DetailAnnotationViewController alloc] init];
+        viewController.dictAddress = ((DDAnnotation *)view.annotation).dictAddress;
+        [self.navigationController pushViewController:viewController animated:YES];
+        [viewController release];
+        viewController = nil;
+    }
 }
 
 - (MKOverlayView *)mapView:(MKMapView *)map viewForOverlay:(id <MKOverlay>)overlay

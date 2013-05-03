@@ -136,14 +136,15 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
     }
     
     //cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
+//    
+//    Places *obj = [self.fullPlacesArray objectAtIndex:indexPath.row];
+//    cell.textLabel.text = obj.text;
+//    cell.detailTextLabel.text = obj.city;
+//    cell.textLabel.font = [UIFont boldSystemFontOfSize:14.0];
+//    cell.detailTextLabel.font = [UIFont italicSystemFontOfSize:14.0];
+//    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     Places *obj = [self.fullPlacesArray objectAtIndex:indexPath.row];
-    cell.textLabel.text = obj.text;
-    cell.detailTextLabel.text = obj.city;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:14.0];
-    cell.detailTextLabel.font = [UIFont italicSystemFontOfSize:14.0];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    
+    [cell setupCellWithPlace:obj];
     return cell;
 }
 

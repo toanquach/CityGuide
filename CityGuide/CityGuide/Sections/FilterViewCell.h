@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+@class Places;
+
 @interface FilterViewCell : UITableViewCell
+{
+    IBOutlet UILabel *textTitleLabel;
+    IBOutlet UILabel *subTitleLabel;
+    IBOutlet UIImageView *infoImageView;
+    
+}
+
+- (void)setupCellWithPlace:(Places *)place;
 
 @end

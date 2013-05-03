@@ -7,6 +7,8 @@
 //
 
 #import "FilterViewCell.h"
+#import "Places.h"
+#import "AFNetworking.h"
 
 @implementation FilterViewCell
 
@@ -16,6 +18,8 @@
     if (self) {
         // Initialization code
         // custom view and style font
+        textTitleLabel.font = [UIFont boldSystemFontOfSize:14.0];
+        subTitleLabel.font = [UIFont italicSystemFontOfSize:14.0];
     }
     return self;
 }
@@ -27,4 +31,34 @@
     // Configure the view for the selected state
 }
 
+- (void)setupCellWithPlace:(Places *)place
+{
+    textTitleLabel.text = place.text;
+    subTitleLabel.text = place.city;
+    NSURLRequest *imgRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:place.image]];
+    AFImageRequestOperation *imgOperation = [AFImageRequestOperation
+                                             imageRequestOperationWithRequest:imgRequest
+                                             imageProcessingBlock:^UIImage *(UIImage *image)
+     {
+         return image;
+     }
+     success:^(NSURLRequest *imgRequest, NSHTTPURLResponse *response, UIImage *image)
+     {
+         infoImageView.image = image;
+     }
+     failure:^(NSURLRequest *imgRequest, NSHTTPURLResponse *response, NSError *error)
+     {
+         NSLog(@"Error getting photo");
+     }];
+    
+    [imgOperation start];
+}
+
+- (void)dealloc
+{
+    [textTitleLabel release];
+    [subTitleLabel release];
+    [infoImageView release];
+    [super dealloc];
+}
 @end

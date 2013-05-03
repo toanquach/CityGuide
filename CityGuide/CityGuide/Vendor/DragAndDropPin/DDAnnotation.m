@@ -32,6 +32,7 @@
 @synthesize coordinate = coordinate_;
 @synthesize title = title_;
 @synthesize subtitle = subtitle_;
+@synthesize dictAddress;
 
 - (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate addressDictionary:(NSDictionary *)addressDictionary {
 	
@@ -44,6 +45,7 @@
 
 - (void)dealloc
 {
+    [dictAddress release];
     [title_ release];
     [subtitle_ release];
     
