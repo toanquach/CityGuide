@@ -34,5 +34,12 @@
 //      Get all place
 //
 + (NSArray *)getAllPlaces;
-
+//
+//      Select Group by Field
+//
++ (NSArray *)selectGroupBy;
+//
+//      Get list place in city
+//
++ (NSArray *)selectItemByCity:(NSString *)cityName;
 @end

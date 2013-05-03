@@ -20,7 +20,6 @@
 		6A26934217338B1800C5BA38 /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A26933717338B1800C5BA38 /* AFURLConnectionOperation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		6A26934317338B1800C5BA38 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A26933917338B1800C5BA38 /* AFXMLRequestOperation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		6A26934417338B1800C5BA38 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A26933B17338B1800C5BA38 /* UIImageView+AFNetworking.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		6A26934617338B8200C5BA38 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A26934517338B8100C5BA38 /* MobileCoreServices.framework */; };
 		6A68C1E0172AEDD50015D2F3 /* CityGuideCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */; };
 		6A68C1E3172AF4580015D2F3 /* Places+Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1E2172AF4570015D2F3 /* Places+Custom.m */; };
 		9A03449B172B766C00042F42 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A03449A172B766C00042F42 /* MBProgressHUD.m */; };
@@ -29,8 +28,9 @@
 		9A1A7050172B901200024317 /* FilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A704E172B901200024317 /* FilterViewController.m */; };
 		9A1A7051172B901200024317 /* FilterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9A1A704F172B901200024317 /* FilterViewController.xib */; };
 		9A1A7055172B941800024317 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A7054172B941800024317 /* Reachability.m */; };
-		9A1A7057172B943600024317 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1A7056172B943600024317 /* SystemConfiguration.framework */; };
 		9A1A7059172B944400024317 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1A7058172B944400024317 /* CFNetwork.framework */; };
+		9A5281761733A36300576445 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A5281741733A36300576445 /* MobileCoreServices.framework */; };
+		9A5281771733A36300576445 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A5281751733A36300576445 /* SystemConfiguration.framework */; };
 		9A6C72DE1732119A00A9B798 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6C72DD1732119A00A9B798 /* Utils.m */; };
 		9A6C72EA1732434200A9B798 /* DDAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6C72E11732434200A9B798 /* DDAnnotation.m */; };
 		9A6C72EB1732434200A9B798 /* DDAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6C72E31732434200A9B798 /* DDAnnotationView.m */; };
@@ -91,7 +91,6 @@
 		6A26933917338B1800C5BA38 /* AFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFXMLRequestOperation.m; sourceTree = "<group>"; };
 		6A26933A17338B1800C5BA38 /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		6A26933B17338B1800C5BA38 /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
-		6A26934517338B8100C5BA38 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		6A68C1DE172AEDD50015D2F3 /* CityGuideCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CityGuideCoreDataManager.h; sourceTree = "<group>"; };
 		6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CityGuideCoreDataManager.m; sourceTree = "<group>"; };
 		6A68C1E1172AF4570015D2F3 /* Places+Custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Places+Custom.h"; sourceTree = "<group>"; };
@@ -107,8 +106,9 @@
 		9A1A704F172B901200024317 /* FilterViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FilterViewController.xib; sourceTree = "<group>"; };
 		9A1A7053172B941800024317 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		9A1A7054172B941800024317 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
-		9A1A7056172B943600024317 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		9A1A7058172B944400024317 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		9A5281741733A36300576445 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		9A5281751733A36300576445 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		9A6C72DC1732119A00A9B798 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		9A6C72DD1732119A00A9B798 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		9A6C72E01732434200A9B798 /* DDAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDAnnotation.h; sourceTree = "<group>"; };
@@ -158,8 +158,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A1A7057172B943600024317 /* SystemConfiguration.framework in Frameworks */,
-				6A26934617338B8200C5BA38 /* MobileCoreServices.framework in Frameworks */,
+				9A5281761733A36300576445 /* MobileCoreServices.framework in Frameworks */,
+				9A5281771733A36300576445 /* SystemConfiguration.framework in Frameworks */,
 				9A6C72F31732448F00A9B798 /* QuartzCore.framework in Frameworks */,
 				9A1A7059172B944400024317 /* CFNetwork.framework in Frameworks */,
 				9ABFCD9E172A506C0022A9C4 /* CoreData.framework in Frameworks */,
@@ -253,6 +253,8 @@
 		9ABFCD13172A2FED0022A9C4 = {
 			isa = PBXGroup;
 			children = (
+				9A5281741733A36300576445 /* MobileCoreServices.framework */,
+				9A5281751733A36300576445 /* SystemConfiguration.framework */,
 				9ABFCD25172A2FED0022A9C4 /* CityGuide */,
 				9ABFCD1E172A2FED0022A9C4 /* Frameworks */,
 				9ABFCD1D172A2FED0022A9C4 /* Products */,
@@ -270,10 +272,8 @@
 		9ABFCD1E172A2FED0022A9C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6A26934517338B8100C5BA38 /* MobileCoreServices.framework */,
 				9A6C72F21732448F00A9B798 /* QuartzCore.framework */,
 				9A1A7058172B944400024317 /* CFNetwork.framework */,
-				9A1A7056172B943600024317 /* SystemConfiguration.framework */,
 				9ABFCD9D172A506C0022A9C4 /* CoreData.framework */,
 				9ABFCD9B172A50660022A9C4 /* CoreLocation.framework */,
 				9ABFCD99172A50600022A9C4 /* MapKit.framework */,
@@ -601,13 +601,13 @@
 		9ABFCD43172A2FED0022A9C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Hai Nguyen (7XV4A7MU2Z)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CityGuide/CityGuide-Prefix.pch";
 				INFOPLIST_FILE = "CityGuide/CityGuide-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "45025AA0-27DC-493F-BC2E-764943700EF7";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;

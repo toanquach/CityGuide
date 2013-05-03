@@ -15,6 +15,7 @@
     IBOutlet UILabel *textTitleLabel;
     IBOutlet UILabel *subTitleLabel;
     IBOutlet UIImageView *infoImageView;
+    IBOutlet UIActivityIndicatorView *loadingView;
     
 }
 

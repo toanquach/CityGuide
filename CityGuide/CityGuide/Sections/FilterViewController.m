@@ -18,8 +18,11 @@
 
 @property (retain, nonatomic) NSMutableArray *fullPlacesArray;
 
-@property (nonatomic) int currentTypeSearch;
+@property (retain, nonatomic) NSMutableArray *placesGroupArray;
 
+@property (nonatomic) int isSearch;
+
+@property (retain, nonatomic) NSMutableArray *alphaBetArray;
 
 - (void)setupView;
 
@@ -66,6 +69,36 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 - (void)setupView
 {
+    self.alphaBetArray = [NSMutableArray arrayWithObjects:@"A",@"B",@"C",@"D",@"E",@"F",@"G",@"H",@"I",@"K",@"L",@"M",@"N",@"O",@"P",@"R",@"S",@"T",@"U",@"V",@"X",@"Y",@"Z",@"#",nil];
+    //
+    // list section in list customer sort by alphabe
+    //
+    self.placesGroupArray = [[NSMutableArray alloc] init];
+    NSArray *groupByPlaceArray = [[NSArray alloc] initWithArray:[Places selectGroupBy]];
+    
+    //get list group
+    for (int i = 0; i < [self.alphaBetArray count]; i++)
+    {
+        for (int j = 0; j < [groupByPlaceArray count]; j++)
+        {
+            NSDictionary *dict = [groupByPlaceArray objectAtIndex:j];
+            NSString *key = [dict objectForKey:@"city"];
+            if ([key isEqualToString:@""] || key == nil)
+            {
+                key = @"#";
+            }
+            NSString *firtChar = [key substringWithRange:NSMakeRange(0, 1)];
+            if ([firtChar isEqualToString:[self.alphaBetArray objectAtIndex:i]])
+            {
+                // get list item by city
+                NSArray *list = [[NSArray alloc] initWithArray:[Places selectItemByCity:key]];
+                if (list != nil && [list count] > 0)
+                {
+                    [self.placesGroupArray addObject:list];
+                }
+            }
+        }
+    }
     //
     //Regiter Xib for table view cell
     //
@@ -95,6 +128,20 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 #pragma mark - UITableViewDelegate - Datasource
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    if ([tableView isEqual:self.filterTableView])
+    {
+        if (self.isSearch)
+        {
+            return 1;
+        }
+        return [self.placesGroupArray count];
+    }
+    return 1;
+}
+
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 54;
@@ -102,9 +149,10 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (_currentTypeSearch == 0)
+    if (self.isSearch == 0)
     {
-        return [self.fullPlacesArray count];
+//        return [self.fullPlacesArray count];
+        return [[self.fullPlacesArray objectAtIndex:section] count];
     }
     return 0;
 }
@@ -113,20 +161,7 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 // Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-//    static NSString *cellIdentifier = @"cellIdentifier";
-//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-//    if (cell == nil)
-//    {
-//        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier] autorelease];
-//    }
-//    Places *obj = [self.fullPlacesArray objectAtIndex:indexPath.row];
-//    cell.textLabel.text = obj.text;
-//    cell.detailTextLabel.text = obj.city;
-//    cell.textLabel.font = [UIFont boldSystemFontOfSize:14.0];
-//    cell.detailTextLabel.font = [UIFont italicSystemFontOfSize:14.0];
-//    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    
+{    
     FilterViewCell *cell = (FilterViewCell *)[tableView dequeueReusableCellWithIdentifier:filterCellIdentifier];
     
     if(cell == nil)
@@ -134,18 +169,68 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
         cell = [[FilterViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:filterCellIdentifier];
         
     }
-    
-    //cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//    
-//    Places *obj = [self.fullPlacesArray objectAtIndex:indexPath.row];
-//    cell.textLabel.text = obj.text;
-//    cell.detailTextLabel.text = obj.city;
-//    cell.textLabel.font = [UIFont boldSystemFontOfSize:14.0];
-//    cell.detailTextLabel.font = [UIFont italicSystemFontOfSize:14.0];
-//    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
     Places *obj = [self.fullPlacesArray objectAtIndex:indexPath.row];
     [cell setupCellWithPlace:obj];
     return cell;
+}
+
+//
+//      Section Index
+//
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
+{
+    if ([tableView isEqual:self.filterTableView])
+    {
+        if (!self.isSearch)
+        {
+            return self.alphaBetArray;
+        }
+    }
+	return [[[NSArray alloc]init] autorelease];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if ([tableView isEqual:self.filterTableView])
+    {
+        if (self.isSearch)
+        {
+            return 0;
+        }
+        if (((NSMutableArray*)[self.placesGroupArray objectAtIndex:section]).count > 0)
+        {
+            return 20;
+        }
+    }
+    return 0;
+}
+
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    if ([tableView isEqual:self.filterTableView])
+    {
+        UITableViewHeaderFooterView *headerView = [[[UITableViewHeaderFooterView alloc] init] autorelease];
+        
+        UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"customer_header_cell_bg.png"]];
+        imgView.frame = CGRectMake(0, 0, 380 , 22);
+        [headerView addSubview:imgView];
+        [imgView release];
+        
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 40, 20)];
+        label.text = [self.alphaBetArray objectAtIndex:section];
+        label.backgroundColor = [UIColor clearColor];
+        label.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+        
+        [headerView addSubview:label];
+        
+        headerView.tintColor = [UIColor colorWithRed:231/255.f green:231/255.f blue:231/255.f alpha:1];
+        
+        return headerView;
+    }
+    
+    return nil;
 }
 
 #pragma mark - Content Filtering
@@ -175,6 +260,8 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 - (void)dealloc
 {
+    [_alphaBetArray release];
+    [_placesGroupArray release];
     [_fullPlacesArray release];
     [_filterPlacesArray release];
     [_filterTableView release];
@@ -183,6 +270,8 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 - (void)viewDidUnload
 {
+    [self setAlphaBetArray:nil];
+    [self setPlacesGroupArray:nil];
     [self setFullPlacesArray:nil];
     [self setFilterPlacesArray:nil];
     [self setFilterPlacesArray:nil];

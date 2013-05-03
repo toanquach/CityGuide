@@ -17,9 +17,6 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        // custom view and style font
-        textTitleLabel.font = [UIFont boldSystemFontOfSize:14.0];
-        subTitleLabel.font = [UIFont italicSystemFontOfSize:14.0];
     }
     return self;
 }
@@ -33,8 +30,16 @@
 
 - (void)setupCellWithPlace:(Places *)place
 {
+    //
+    // custom view and style font
+    //
+    textTitleLabel.font = [UIFont boldSystemFontOfSize:14.0];
+    subTitleLabel.font = [UIFont italicSystemFontOfSize:14.0];
+    
     textTitleLabel.text = place.text;
     subTitleLabel.text = place.city;
+    infoImageView.image = nil;
+    [loadingView startAnimating];
     NSURLRequest *imgRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:place.image]];
     AFImageRequestOperation *imgOperation = [AFImageRequestOperation
                                              imageRequestOperationWithRequest:imgRequest
@@ -45,10 +50,12 @@
      success:^(NSURLRequest *imgRequest, NSHTTPURLResponse *response, UIImage *image)
      {
          infoImageView.image = image;
+         [loadingView stopAnimating];
      }
      failure:^(NSURLRequest *imgRequest, NSHTTPURLResponse *response, NSError *error)
      {
          NSLog(@"Error getting photo");
+         [loadingView stopAnimating];
      }];
     
     [imgOperation start];
@@ -59,6 +66,7 @@
     [textTitleLabel release];
     [subTitleLabel release];
     [infoImageView release];
+    [loadingView release];
     [super dealloc];
 }
 @end

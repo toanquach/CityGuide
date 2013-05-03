@@ -177,5 +177,54 @@
     
     return [list autorelease];
 }
-
+//
+//
+//
++ (NSArray *)selectGroupBy
+{
+    NSManagedObjectContext *managedObjectContext = [[CityGuideCoreDataManager sharedCityGuideCoreDataManager] managedObjectContext];
+    
+    NSFetchRequest* fetch = [NSFetchRequest fetchRequestWithEntityName:kEntityName];
+    NSEntityDescription* entity = [NSEntityDescription entityForName:kEntityName
+                                              inManagedObjectContext:managedObjectContext];
+    NSAttributeDescription* statusDesc = [entity.attributesByName objectForKey:@"city"];
+    
+    NSExpression *keyPathExpression = [NSExpression expressionForKeyPath: @"text"]; // Does not really matter
+    NSExpression *countExpression = [NSExpression expressionForFunction: @"count:"
+                                                              arguments: [NSArray arrayWithObject:keyPathExpression]];
+    NSExpressionDescription *expressionDescription = [[NSExpressionDescription alloc] init];
+    [expressionDescription setName: @"count"];
+    [expressionDescription setExpression: countExpression];
+    [expressionDescription setExpressionResultType: NSInteger32AttributeType];
+    [fetch setPropertiesToFetch:[NSArray arrayWithObjects:statusDesc, expressionDescription, nil]];
+    [fetch setPropertiesToGroupBy:[NSArray arrayWithObject:statusDesc]];
+    [fetch setResultType:NSDictionaryResultType];
+    NSError* error = nil;
+    NSArray *results = [managedObjectContext executeFetchRequest:fetch
+                                                             error:&error];
+    
+    [expressionDescription release];
+    return results;
+}
+//
+//      Get list place in city
+//
++ (NSArray *)selectItemByCity:(NSString *)cityName
+{
+    NSArray *list = nil;
+    NSFetchRequest *fetch = [NSFetchRequest fetchRequestWithEntityName:kEntityName];
+    [fetch setFetchBatchSize:20];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"city = %@", cityName];
+    [fetch setPredicate:predicate];
+    
+    list = [[[CityGuideCoreDataManager sharedCityGuideCoreDataManager] managedObjectContext] executeFetchRequest:fetch error:nil];
+    
+    if (list == nil)
+    {
+        return nil;
+    }
+    
+    return [list autorelease];
+}
 @end

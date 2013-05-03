@@ -250,6 +250,8 @@
     //
     self.filterMileLabel.text = @"10000";
     self.radiusSlider.value = 100;
+    self.radiusSlider.maximumValue = 100;
+    self.radiusSlider.minimumValue = 1;
     //
     //  Update location
     //
@@ -257,6 +259,8 @@
     self.locationManager.delegate = self;
     [self.locationManager startUpdatingLocation];
     [self centerOnUserAnimated:YES];
+    
+    [Places selectGroupBy];
 }
 
 
