@@ -20,8 +20,13 @@
 		6A26934217338B1800C5BA38 /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A26933717338B1800C5BA38 /* AFURLConnectionOperation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		6A26934317338B1800C5BA38 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A26933917338B1800C5BA38 /* AFXMLRequestOperation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		6A26934417338B1800C5BA38 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A26933B17338B1800C5BA38 /* UIImageView+AFNetworking.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6A3DB60417343DEE008C1CEF /* FilterViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A3DB60317343DED008C1CEF /* FilterViewController_iPad.xib */; };
+		6A3DB60617343E23008C1CEF /* DetailAnnotationViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A3DB60517343E23008C1CEF /* DetailAnnotationViewController_iPad.xib */; };
 		6A68C1E0172AEDD50015D2F3 /* CityGuideCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */; };
 		6A68C1E3172AF4580015D2F3 /* Places+Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1E2172AF4570015D2F3 /* Places+Custom.m */; };
+		6A8076821734B4FD00AD0CD7 /* DetailAnnotationViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8076811734B4FD00AD0CD7 /* DetailAnnotationViewCell.m */; };
+		6A8076841734B51400AD0CD7 /* DetailAnnotationViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A8076831734B51400AD0CD7 /* DetailAnnotationViewCell.xib */; };
+		6A8076871734C43500AD0CD7 /* UILabel+Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8076861734C43500AD0CD7 /* UILabel+Custom.m */; };
 		9A03449B172B766C00042F42 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A03449A172B766C00042F42 /* MBProgressHUD.m */; };
 		9A1A7048172B863300024317 /* NSDictionary+EmptyString.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A7047172B863300024317 /* NSDictionary+EmptyString.m */; };
 		9A1A704B172B87FD00024317 /* Places.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A704A172B87FD00024317 /* Places.m */; };
@@ -91,10 +96,17 @@
 		6A26933917338B1800C5BA38 /* AFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFXMLRequestOperation.m; sourceTree = "<group>"; };
 		6A26933A17338B1800C5BA38 /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		6A26933B17338B1800C5BA38 /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
+		6A3DB60317343DED008C1CEF /* FilterViewController_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FilterViewController_iPad.xib; sourceTree = "<group>"; };
+		6A3DB60517343E23008C1CEF /* DetailAnnotationViewController_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailAnnotationViewController_iPad.xib; sourceTree = "<group>"; };
 		6A68C1DE172AEDD50015D2F3 /* CityGuideCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CityGuideCoreDataManager.h; sourceTree = "<group>"; };
 		6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CityGuideCoreDataManager.m; sourceTree = "<group>"; };
 		6A68C1E1172AF4570015D2F3 /* Places+Custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Places+Custom.h"; sourceTree = "<group>"; };
 		6A68C1E2172AF4570015D2F3 /* Places+Custom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Places+Custom.m"; sourceTree = "<group>"; };
+		6A8076801734B4FD00AD0CD7 /* DetailAnnotationViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailAnnotationViewCell.h; sourceTree = "<group>"; };
+		6A8076811734B4FD00AD0CD7 /* DetailAnnotationViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailAnnotationViewCell.m; sourceTree = "<group>"; };
+		6A8076831734B51400AD0CD7 /* DetailAnnotationViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailAnnotationViewCell.xib; sourceTree = "<group>"; };
+		6A8076851734C43500AD0CD7 /* UILabel+Custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+Custom.h"; sourceTree = "<group>"; };
+		6A8076861734C43500AD0CD7 /* UILabel+Custom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Custom.m"; sourceTree = "<group>"; };
 		9A034499172B766C00042F42 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		9A03449A172B766C00042F42 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		9A1A7046172B863300024317 /* NSDictionary+EmptyString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+EmptyString.h"; sourceTree = "<group>"; };
@@ -180,6 +192,10 @@
 				6A269306173364AF00C5BA38 /* DetailAnnotationViewController.h */,
 				6A269307173364AF00C5BA38 /* DetailAnnotationViewController.m */,
 				6A269308173364AF00C5BA38 /* DetailAnnotationViewController.xib */,
+				6A3DB60517343E23008C1CEF /* DetailAnnotationViewController_iPad.xib */,
+				6A8076801734B4FD00AD0CD7 /* DetailAnnotationViewCell.h */,
+				6A8076811734B4FD00AD0CD7 /* DetailAnnotationViewCell.m */,
+				6A8076831734B51400AD0CD7 /* DetailAnnotationViewCell.xib */,
 			);
 			name = DetailAnnotationPage;
 			sourceTree = "<group>";
@@ -216,6 +232,7 @@
 				9A1A704D172B901200024317 /* FilterViewController.h */,
 				9A1A704E172B901200024317 /* FilterViewController.m */,
 				9A1A704F172B901200024317 /* FilterViewController.xib */,
+				6A3DB60317343DED008C1CEF /* FilterViewController_iPad.xib */,
 				9AF13D091732A0D0002F0909 /* FilterViewCell.h */,
 				9AF13D0A1732A0D0002F0909 /* FilterViewCell.m */,
 				9AF13D0C1732A0E3002F0909 /* FilterViewCell.xib */,
@@ -253,8 +270,6 @@
 		9ABFCD13172A2FED0022A9C4 = {
 			isa = PBXGroup;
 			children = (
-				9A5281741733A36300576445 /* MobileCoreServices.framework */,
-				9A5281751733A36300576445 /* SystemConfiguration.framework */,
 				9ABFCD25172A2FED0022A9C4 /* CityGuide */,
 				9ABFCD1E172A2FED0022A9C4 /* Frameworks */,
 				9ABFCD1D172A2FED0022A9C4 /* Products */,
@@ -272,6 +287,8 @@
 		9ABFCD1E172A2FED0022A9C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9A5281741733A36300576445 /* MobileCoreServices.framework */,
+				9A5281751733A36300576445 /* SystemConfiguration.framework */,
 				9A6C72F21732448F00A9B798 /* QuartzCore.framework */,
 				9A1A7058172B944400024317 /* CFNetwork.framework */,
 				9ABFCD9D172A506C0022A9C4 /* CoreData.framework */,
@@ -341,6 +358,8 @@
 			children = (
 				9A1A7046172B863300024317 /* NSDictionary+EmptyString.h */,
 				9A1A7047172B863300024317 /* NSDictionary+EmptyString.m */,
+				6A8076851734C43500AD0CD7 /* UILabel+Custom.h */,
+				6A8076861734C43500AD0CD7 /* UILabel+Custom.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -389,7 +408,6 @@
 		9ABFCD4C172A32250022A9C4 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				9A1A7052172B941800024317 /* Reachability */,
 				9A034499172B766C00042F42 /* MBProgressHUD.h */,
 				9A03449A172B766C00042F42 /* MBProgressHUD.m */,
 			);
@@ -399,6 +417,7 @@
 		9ABFCD4D172A32250022A9C4 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				9A1A7052172B941800024317 /* Reachability */,
 				6A26932817338B1800C5BA38 /* AFNetworking */,
 				9A6C72DF1732434200A9B798 /* DragAndDropPin */,
 			);
@@ -489,6 +508,9 @@
 				9AF13D0D1732A0E3002F0909 /* FilterViewCell.xib in Resources */,
 				6A2693041733636E00C5BA38 /* mylocationbutton.png in Resources */,
 				6A26930A173364AF00C5BA38 /* DetailAnnotationViewController.xib in Resources */,
+				6A3DB60417343DEE008C1CEF /* FilterViewController_iPad.xib in Resources */,
+				6A3DB60617343E23008C1CEF /* DetailAnnotationViewController_iPad.xib in Resources */,
+				6A8076841734B51400AD0CD7 /* DetailAnnotationViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,6 +547,8 @@
 				6A26934217338B1800C5BA38 /* AFURLConnectionOperation.m in Sources */,
 				6A26934317338B1800C5BA38 /* AFXMLRequestOperation.m in Sources */,
 				6A26934417338B1800C5BA38 /* UIImageView+AFNetworking.m in Sources */,
+				6A8076821734B4FD00AD0CD7 /* DetailAnnotationViewCell.m in Sources */,
+				6A8076871734C43500AD0CD7 /* UILabel+Custom.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -607,7 +631,7 @@
 				INFOPLIST_FILE = "CityGuide/CityGuide-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "45025AA0-27DC-493F-BC2E-764943700EF7";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CA05062C-7314-4677-8833-01882D53884C";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;

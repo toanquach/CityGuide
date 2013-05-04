@@ -20,5 +20,6 @@
 }
 
 - (void)setupCellWithPlace:(Places *)place;
+- (void)setupCellWithDict:(NSDictionary *)dict;
 
 @end

@@ -138,6 +138,18 @@
     self.navigationController.navigationBar.hidden  = YES;
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    //
+    //  Update location
+    //
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    [self.locationManager startUpdatingLocation];
+    [self centerOnUserAnimated:YES];
+}
+
 - (void)dealloc
 {
     [_geocoder release];
@@ -252,15 +264,6 @@
     self.radiusSlider.value = 100;
     self.radiusSlider.maximumValue = 100;
     self.radiusSlider.minimumValue = 1;
-    //
-    //  Update location
-    //
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self;
-    [self.locationManager startUpdatingLocation];
-    [self centerOnUserAnimated:YES];
-    
-    [Places selectGroupBy];
 }
 
 
@@ -332,6 +335,10 @@
              annotation.subtitle = address;
              annotation.dictAddress = [placemark.addressDictionary retain];
          }];
+    }
+    else
+    {
+        annotation.subtitle = @"";
     }
 }
 
@@ -706,6 +713,7 @@
     {
         DetailAnnotationViewController *viewController = [[DetailAnnotationViewController alloc] init];
         viewController.dictAddress = ((DDAnnotation *)view.annotation).dictAddress;
+        viewController.coordinate  = ((DDAnnotation *)view.annotation).coordinate;
         [self.navigationController pushViewController:viewController animated:YES];
         [viewController release];
         viewController = nil;

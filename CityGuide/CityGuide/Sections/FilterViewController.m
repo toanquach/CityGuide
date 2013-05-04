@@ -16,8 +16,6 @@
 
 @property (retain, nonatomic) NSMutableArray *filterPlacesArray;
 
-@property (retain, nonatomic) NSMutableArray *fullPlacesArray;
-
 @property (retain, nonatomic) NSMutableArray *placesGroupArray;
 
 @property (nonatomic) int isSearch;
@@ -42,6 +40,22 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
     }
     return self;
 }
+
+- (void)loadView
+{
+    //
+    // check type device and load view
+    //
+    if (ISIPHONE)
+    {
+        self.view = [[[NSBundle mainBundle] loadNibNamed:@"FilterViewController" owner:self options:nil] objectAtIndex:0];
+    }
+    else
+    {
+        self.view = [[[NSBundle mainBundle] loadNibNamed:@"FilterViewController_iPad" owner:self options:nil] objectAtIndex:0];
+    }
+}
+
 
 - (void)viewDidLoad
 {
@@ -71,14 +85,20 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 {
     self.alphaBetArray = [NSMutableArray arrayWithObjects:@"A",@"B",@"C",@"D",@"E",@"F",@"G",@"H",@"I",@"K",@"L",@"M",@"N",@"O",@"P",@"R",@"S",@"T",@"U",@"V",@"X",@"Y",@"Z",@"#",nil];
     //
-    // list section in list customer sort by alphabe
+    //      list section in list customer sort by alphabe
     //
     self.placesGroupArray = [[NSMutableArray alloc] init];
+    //
+    //      get group by country
+    //
     NSArray *groupByPlaceArray = [[NSArray alloc] initWithArray:[Places selectGroupBy]];
-    
-    //get list group
+    //
+    //      get list group
+    //
     for (int i = 0; i < [self.alphaBetArray count]; i++)
     {
+        NSString *keyChar = [self.alphaBetArray objectAtIndex:i];
+        NSMutableArray *rowAray = [[NSMutableArray alloc] init];
         for (int j = 0; j < [groupByPlaceArray count]; j++)
         {
             NSDictionary *dict = [groupByPlaceArray objectAtIndex:j];
@@ -88,21 +108,46 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
                 key = @"#";
             }
             NSString *firtChar = [key substringWithRange:NSMakeRange(0, 1)];
-            if ([firtChar isEqualToString:[self.alphaBetArray objectAtIndex:i]])
+            if ([firtChar isEqualToString:keyChar])
             {
                 // get list item by city
+                if ([key isEqualToString:@"#"])
+                {
+                    key = @"";
+                }
                 NSArray *list = [[NSArray alloc] initWithArray:[Places selectItemByCity:key]];
                 if (list != nil && [list count] > 0)
                 {
-                    [self.placesGroupArray addObject:list];
+                    if ([key isEqualToString:@""] == FALSE)
+                    {
+                        //
+                        //      add item first
+                        //
+                        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:@"1",@"type",key,@"value", nil];
+                        [rowAray addObject:dict];
+                        [dict release];
+                    }
+                    
+                    for (int k = 0; k < [list count]; k++)
+                    {
+                        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:@"2",@"type",[list objectAtIndex:k],@"value", nil];
+                        [rowAray addObject:dict];
+                        [dict release];
+                    }
                 }
             }
-        }
+        }   // end for J
+        [self.placesGroupArray addObject:rowAray];
+        [rowAray release];
     }
+    [groupByPlaceArray release];
     //
     //Regiter Xib for table view cell
     //
     [self.filterTableView registerNib:[UINib nibWithNibName:@"FilterViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:filterCellIdentifier];
+    
+    [self.searchDisplayController.searchResultsTableView registerNib:[UINib nibWithNibName:@"FilterViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:filterCellIdentifier];
+    
     //
     // add right Button
     //
@@ -112,7 +157,6 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
     //
     //
     //
-    self.fullPlacesArray = [[NSMutableArray alloc] initWithArray:[Places getAllPlaces]];
     [self.filterTableView reloadData];
 }
 
@@ -132,7 +176,7 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 {
     if ([tableView isEqual:self.filterTableView])
     {
-        if (self.isSearch)
+        if (self.isSearch == 1)
         {
             return 1;
         }
@@ -151,10 +195,9 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 {
     if (self.isSearch == 0)
     {
-//        return [self.fullPlacesArray count];
-        return [[self.fullPlacesArray objectAtIndex:section] count];
+        return [[self.placesGroupArray objectAtIndex:section] count];
     }
-    return 0;
+    return [self.filterPlacesArray count];
 }
 
 // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
@@ -169,9 +212,20 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
         cell = [[FilterViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:filterCellIdentifier];
         
     }
-
-    Places *obj = [self.fullPlacesArray objectAtIndex:indexPath.row];
-    [cell setupCellWithPlace:obj];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    //Places *obj = [self.fullPlacesArray objectAtIndex:indexPath.row];
+    //[cell setupCellWithPlace:obj];
+    NSDictionary *dict = nil;
+    if (self.isSearch == 1)
+    {
+         dict = [self.filterPlacesArray objectAtIndex:indexPath.row];
+    }
+    else
+    {
+         dict = [[self.placesGroupArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    }
+    
+    [cell setupCellWithDict:dict];
     return cell;
 }
 
@@ -182,19 +236,19 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 {
     if ([tableView isEqual:self.filterTableView])
     {
-        if (!self.isSearch)
+        if (self.isSearch == 0)
         {
             return self.alphaBetArray;
         }
     }
-	return [[[NSArray alloc]init] autorelease];
+	return [[[NSArray alloc]initWithObjects:@"", nil] autorelease];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     if ([tableView isEqual:self.filterTableView])
     {
-        if (self.isSearch)
+        if (self.isSearch == 1)
         {
             return 0;
         }
@@ -224,9 +278,9 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
         label.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         
         [headerView addSubview:label];
+        [label release];
         
         headerView.tintColor = [UIColor colorWithRed:231/255.f green:231/255.f blue:231/255.f alpha:1];
-        
         return headerView;
     }
     
@@ -237,13 +291,27 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 - (void)filterContentForSearchText:(NSString*)searchText
 {
-    
+ 
+    if (self.filterPlacesArray)
+    {
+        [self.filterPlacesArray  release];
+        self.filterPlacesArray  = nil;
+    }
+    self.filterPlacesArray = [[NSMutableArray alloc] init];
+    NSMutableArray *list = [[NSMutableArray alloc] initWithArray:[Places searchItemWithKey:searchText]];
+    for (int i = 0; i < [list count]; i++)
+    {
+        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:@"2",@"type",[list objectAtIndex:i],@"value", nil];
+        [self.filterPlacesArray  addObject:dict];
+        [dict release];
+    }
 }
 
 #pragma mark - UISearchDisplayController Delegate Methods
 
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
+    self.isSearch = 1;
     [self filterContentForSearchText:searchString];
     // Return YES to cause the search result table view to be reloaded.
     return YES;
@@ -253,7 +321,7 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
 {
-    
+    self.isSearch = 0;
 }
 
 #pragma mark - Life Cycle
@@ -262,7 +330,6 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 {
     [_alphaBetArray release];
     [_placesGroupArray release];
-    [_fullPlacesArray release];
     [_filterPlacesArray release];
     [_filterTableView release];
     [super dealloc];
@@ -272,7 +339,6 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 {
     [self setAlphaBetArray:nil];
     [self setPlacesGroupArray:nil];
-    [self setFullPlacesArray:nil];
     [self setFilterPlacesArray:nil];
     [self setFilterPlacesArray:nil];
     [self setFilterTableView:nil];

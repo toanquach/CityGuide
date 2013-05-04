@@ -69,6 +69,7 @@
         obj.image = [dict objectForKey:@"image"];
         obj.latitude = [NSNumber numberWithDouble:[[dict objectForKey:@"latitude"] doubleValue]];
         obj.longitude = [NSNumber numberWithDouble:[[dict objectForKey:@"longtitude"] doubleValue]];
+        obj.address = [dict objectForKey:@"address"];
     }
     @catch (NSException *exception)
     {
