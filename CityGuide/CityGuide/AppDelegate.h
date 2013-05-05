@@ -15,4 +15,7 @@
 @property (strong, nonatomic) UINavigationController *navigationController;
 
 -(BOOL)reachable;
+
+- (void)showAlertView:(NSString *)title andMessage:(NSString *)message;
+
 @end

@@ -10,14 +10,17 @@
 #import "DetailAnnotationViewCell.h"
 #import "UILabel+Custom.h"
 #import "Places+Custom.h"
+#import "HomeViewController.h"
 
 @interface DetailAnnotationViewController ()
 
 @property (retain, nonatomic) NSMutableArray *cellArray;
 @property (retain, nonatomic) IBOutlet UITableView *detailTableView;
 @property (retain, nonatomic) NSString *addressStr;
-- (void)setupView;
+@property (nonatomic, strong) CLGeocoder *geocoder; // support IOS 5
 
+- (void)setupView;
+- (void)setupTableView;
 @end
 
 @implementation DetailAnnotationViewController
@@ -74,6 +77,8 @@ static NSString *detailViewCellIdentifer = @"detailViewCellIdentifer";
 
 - (void)dealloc
 {
+    [dictAddress release];
+    [_geocoder release];
     [_addressStr release];
     [_cellArray release];
     [_detailTableView release];
@@ -82,6 +87,8 @@ static NSString *detailViewCellIdentifer = @"detailViewCellIdentifer";
 
 - (void)viewDidUnload
 {
+    [self setDictAddress:nil];
+    [self setGeocoder:nil];
     [self setAddressStr:nil];
     [self setCellArray:nil];
     [self setDetailTableView:nil];
@@ -101,40 +108,91 @@ static NSString *detailViewCellIdentifer = @"detailViewCellIdentifer";
     //
     //      register Nib for tablview
     //
-    [self.detailTableView registerNib:[UINib nibWithNibName:@"DetailAnnotationViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:detailViewCellIdentifer];
-    
+    if(ISIPHONE)
+    {
+        [self.detailTableView registerNib:[UINib nibWithNibName:@"DetailAnnotationViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:detailViewCellIdentifer];
+    }
+    else
+    {
+        [self.detailTableView registerNib:[UINib nibWithNibName:@"DetailAnnotationViewCell_iPad" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:detailViewCellIdentifer];
+    }
     self.cellArray = [[NSMutableArray alloc] init];
-    
+    //
+    //      If have info
+    //
+    if (self.dictAddress != nil)
+    {
+        [self setupTableView];
+    }
+    else
+    {
+         CLLocation *location = [[CLLocation alloc]initWithLatitude:self.coordinate.latitude longitude:self.coordinate.longitude];
+        if (!self.geocoder)
+        {
+            self.geocoder = [[CLGeocoder alloc] init];
+        }
+        [self.geocoder reverseGeocodeLocation:location
+                            completionHandler:^(NSArray *placemarks, NSError *error)
+         {
+             
+             if (error)
+             {
+                 DLog(@"Geocoder return error: %@", error);
+                 return;
+             }
+             
+             if ([placemarks count] == 0)
+             {
+                 return;
+             }
+             
+             CLPlacemark *placemark = [placemarks objectAtIndex:0];
+             if (self.dictAddress != nil)
+             {
+                 [self.dictAddress release];
+                 self.dictAddress = nil;
+             }
+             self.dictAddress = [[NSDictionary alloc] initWithDictionary:placemark.addressDictionary];
+             [self setupTableView];
+         }];
+    }
+}
+
+- (void)setupTableView
+{
     NSArray *arr = [self.dictAddress objectForKey:@"FormattedAddressLines"];
-    NSString *address = @"";
+    self.addressStr = @"";
     for (int i = 0; i <[arr count]; i++)
     {
         if (i < [arr count] - 1)
         {
-            address = [address stringByAppendingString:[NSString stringWithFormat:@"%@, ",[arr objectAtIndex:i]]];
+            NSString *str = [NSString stringWithFormat:@"%@, ",[arr objectAtIndex:i]];
+            self.addressStr = [self.addressStr stringByAppendingString:str];
+            str = nil;
         }
         else
         {
-            address = [address stringByAppendingString:[NSString stringWithFormat:@"%@",[arr objectAtIndex:i]]];   
+            NSString *str = [NSString stringWithFormat:@"%@",[arr objectAtIndex:i]];
+            self.addressStr = [self.addressStr stringByAppendingString:str];
+            str = nil;
         }
     }
     
-    self.addressStr = [address retain];
     
-    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
                           @"Name:",@"Caption",@"",@"Info", @"1", @"Type", nil];
     [self.cellArray addObject:dict];
-    [dict release];
+    dict = nil;
     
-    dict = [[NSDictionary alloc] initWithObjectsAndKeys:
-            @"Address:",@"Caption",address,@"Info", @"2", @"Type", nil];
+    dict = [NSDictionary dictionaryWithObjectsAndKeys:
+            @"Address:",@"Caption",self.addressStr,@"Info", @"2", @"Type", nil];
     [self.cellArray addObject:dict];
-    [dict release];
+    dict = nil;
     
-    dict = [[NSDictionary alloc] initWithObjectsAndKeys:
+    dict = [NSDictionary dictionaryWithObjectsAndKeys:
             @"City:",@"Caption",[self.dictAddress objectForKey:@"City"],@"Info", @"2", @"Type", nil];
     [self.cellArray addObject:dict];
-    [dict release];
+    dict = nil;
     
     [self.detailTableView reloadData];
 }
@@ -163,13 +221,39 @@ static NSString *detailViewCellIdentifer = @"detailViewCellIdentifer";
                           self.addressStr, @"address",nil];
     
     BOOL flag = [Places insert:dict];
+    [dict release];
+    dict = nil;
     if (flag == FALSE)
     {
         //
         //      insert fail
         //      show alert view
         //
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"Save place fail" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles: nil];
+        [alertView show];
+        [alertView release];
+        alertView = nil;
     }
+    else
+    {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"Save place successs" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles: nil];
+        [alertView show];
+        [alertView release];
+        alertView = nil;
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    DetailAnnotationViewCell *cell = (DetailAnnotationViewCell *)[self.detailTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    
+    UIViewController *viewController = [self.navigationController.viewControllers objectAtIndex:0];
+    if ([viewController isKindOfClass:[HomeViewController class]])
+    {
+        [(HomeViewController *)viewController addPinToMap:self.coordinate andTitle:[cell getInfoText] andSubTitle:[self.dictAddress objectForKey:@"City"]];
+    }
+    
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - UItableview datasource
@@ -180,7 +264,19 @@ static NSString *detailViewCellIdentifer = @"detailViewCellIdentifer";
     {
         if (indexPath.row == 1)
         {
-            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 201, 21)];
+            //
+            //      cacular height
+            //
+            int height = 0;
+            if (ISIPHONE)
+            {
+                height = 201;
+            }
+            else
+            {
+                height = 582;
+            }
+            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, height, 21)];
             label.font = [UIFont boldSystemFontOfSize:14.0];
             NSDictionary *dict = [self.cellArray objectAtIndex:indexPath.row];
             label.text = [dict objectForKey:@"Info"];
@@ -202,7 +298,7 @@ static NSString *detailViewCellIdentifer = @"detailViewCellIdentifer";
 {
     if (section == 0)
     {
-        return 3;
+        return [self.cellArray count];
     }
     return 1;
 }
@@ -216,7 +312,7 @@ static NSString *detailViewCellIdentifer = @"detailViewCellIdentifer";
     
     if(cell == nil)
     {
-        cell = [[DetailAnnotationViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:detailViewCellIdentifer];
+        cell = [[[DetailAnnotationViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:detailViewCellIdentifer] autorelease];
         
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;

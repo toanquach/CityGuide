@@ -12,8 +12,6 @@
 
 #import "Reachability.h"
 
-//#import "AFNetworking.h"
-
 @implementation AppDelegate
 
 - (void)dealloc
@@ -42,7 +40,19 @@
     //
     self.navigationController.navigationBarHidden   = YES;
     self.navigationController.navigationBar.hidden  = YES;
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.496f green:0.504 blue:0.52f alpha:1.0f];
+    UIColor *color = [[UIColor alloc] initWithRed:0.496f green:0.504 blue:0.52f alpha:1.0f];
+    self.navigationController.navigationBar.tintColor = color;
+    [color release];
+    //
+    //      create folder images
+    //
+    NSString *imageFolderPath = [[NSString alloc]initWithFormat:@"%@/%@",LIBRARYCACHESDIRECTORY,@"Images"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:imageFolderPath])
+    {
+        [fileManager createDirectoryAtPath:imageFolderPath withIntermediateDirectories:YES attributes:0 error:nil];
+    }
+    [imageFolderPath release];
     
     [self.window makeKeyAndVisible];
     return YES;
@@ -89,6 +99,14 @@
         
     }
     return YES;
+}
+
+- (void)showAlertView:(NSString *)title andMessage:(NSString *)message
+{
+    UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:title message:message delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles: nil];
+    [alertView show];
+    [alertView release];
+    alertView = nil;
 }
 
 @end

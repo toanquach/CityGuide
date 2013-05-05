@@ -18,8 +18,6 @@
     IBOutlet UIActivityIndicatorView *loadingView;
     
 }
-
-- (void)setupCellWithPlace:(Places *)place;
 - (void)setupCellWithDict:(NSDictionary *)dict;
-
+- (void)setTextTitle:(NSString *)text;
 @end

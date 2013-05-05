@@ -10,6 +10,14 @@
 #import "Places.h"
 #import "AFNetworking.h"
 
+@interface FilterViewCell()
+
+@property (nonatomic, retain) NSMutableData *activeDownload;
+@property (nonatomic, retain) NSURLConnection *imageConnection;
+@property (nonatomic, retain) NSString *imagePath;
+
+@end
+
 @implementation FilterViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -28,37 +36,11 @@
     // Configure the view for the selected state
 }
 
-- (void)setupCellWithPlace:(Places *)place
+- (void)setTextTitle:(NSString *)text
 {
-    //
-    // custom view and style font
-    //
-    textTitleLabel.font = [UIFont boldSystemFontOfSize:14.0];
-    subTitleLabel.font = [UIFont italicSystemFontOfSize:14.0];
-    
-    textTitleLabel.text = place.text;
-    subTitleLabel.text = place.city;
-    infoImageView.image = nil;
-    [loadingView startAnimating];
-    NSURLRequest *imgRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:place.image]];
-    AFImageRequestOperation *imgOperation = [AFImageRequestOperation
-                                             imageRequestOperationWithRequest:imgRequest
-                                             imageProcessingBlock:^UIImage *(UIImage *image)
-     {
-         return image;
-     }
-     success:^(NSURLRequest *imgRequest, NSHTTPURLResponse *response, UIImage *image)
-     {
-         infoImageView.image = image;
-         [loadingView stopAnimating];
-     }
-     failure:^(NSURLRequest *imgRequest, NSHTTPURLResponse *response, NSError *error)
-     {
-         NSLog(@"Error getting photo");
-         [loadingView stopAnimating];
-     }];
-    
-    [imgOperation start];
+    textTitleLabel.font = [UIFont boldSystemFontOfSize:16.0];
+    textTitleLabel.hidden = NO;
+    textTitleLabel.text = text;
 }
 
 - (void)setupCellWithDict:(NSDictionary *)dict
@@ -104,39 +86,114 @@
         textTitleLabel.font = [UIFont boldSystemFontOfSize:14.0];
         subTitleLabel.font = [UIFont italicSystemFontOfSize:14.0];
         
-        infoImageView.hidden = NO;
+        //infoImageView.hidden = NO;
         subTitleLabel.hidden = NO;
         textTitleLabel.hidden = NO;
         Places *place = [dict objectForKey:@"value"];
         textTitleLabel.text = place.text;
         subTitleLabel.text = place.city;
         infoImageView.image = nil;
-        [loadingView startAnimating];
-        NSURLRequest *imgRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:place.image]];
-        AFImageRequestOperation *imgOperation = [AFImageRequestOperation
-                                                 imageRequestOperationWithRequest:imgRequest
-                                                 imageProcessingBlock:^UIImage *(UIImage *image)
-                                                 {
-                                                     return image;
-                                                 }
-                                                 success:^(NSURLRequest *imgRequest, NSHTTPURLResponse *response, UIImage *image)
-                                                 {
-                                                     infoImageView.image = image;
-                                                     [loadingView stopAnimating];
-                                                 }
-                                                 failure:^(NSURLRequest *imgRequest, NSHTTPURLResponse *response, NSError *error)
-                                                 {
-                                                     NSLog(@"Error getting photo");
-                                                     [loadingView stopAnimating];
-                                                 }];
+        //
+        //      Check image cache local
+        //
+        NSArray *pathArray = [place.image componentsSeparatedByString:@"/"];
+        NSString *fileName = @"";
         
-        [imgOperation start];
-   
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        if ([pathArray count] > 0)
+        {
+            fileName = [pathArray objectAtIndex:[pathArray count] - 1];
+        }
+        if ([fileName isEqualToString:@""] == FALSE)
+        {
+            
+            self.imagePath = [[NSString alloc] initWithFormat:@"%@/%@/%@",LIBRARYCACHESDIRECTORY,@"Images",fileName];
+            if ([fileManager fileExistsAtPath:self.imagePath])
+            {
+                infoImageView.hidden = NO;
+                UIImage *image = [[UIImage alloc] initWithContentsOfFile:self.imagePath];
+                infoImageView.image = image;
+                [image release];
+                [self.imagePath release];
+                self.imagePath = nil;
+                return;
+            }
+        }
+        fileName = nil;
+        //
+        //      if no image cache => call downloading image
+        //
+        [loadingView startAnimating];
+        self.activeDownload = [[NSMutableData alloc]init];
+        NSURLRequest *imgRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:[place.image stringByReplacingOccurrencesOfString:@": //" withString:@"://"]]];
+        self.imageConnection =  [[NSURLConnection alloc] initWithRequest:imgRequest delegate:self];
     }
 }
 
+
+#pragma mark - NSURLConnectionDelegate
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [self.activeDownload appendData:data];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    //
+	// Clear the activeDownload property to allow later attempts
+    //
+    self.activeDownload = nil;
+    
+    //
+    // Release the connection now that it's finished
+    //
+    self.imageConnection = nil;
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    //
+    // Set appIcon and clear temporary data/image
+    //
+    UIImage *image = [[UIImage alloc] initWithData:self.activeDownload];
+    infoImageView.hidden = NO;
+    if (image.size.width != kAppIconSize || image.size.height != kAppIconSize)
+	{
+        CGSize itemSize = CGSizeMake(kAppIconSize, kAppIconSize);
+		UIGraphicsBeginImageContextWithOptions(itemSize, NO, 0.0f);
+		CGRect imageRect = CGRectMake(0.0, 0.0, itemSize.width, itemSize.height);
+		[image drawInRect:imageRect];
+		infoImageView.image = UIGraphicsGetImageFromCurrentImageContext();
+		UIGraphicsEndImageContext();
+    }
+    else
+    {
+        infoImageView.image = image;
+    }
+    
+    if (self.activeDownload != nil)
+    {
+        [self.activeDownload writeToFile:self.imagePath atomically:YES];
+    }
+    
+    [self.activeDownload release];
+    self.activeDownload = nil;
+    // Release the connection now that it's finished
+    [self.imageConnection release];
+    self.imageConnection = nil;
+    [image release];
+    image = nil;
+    [self.imagePath release];
+    self.imagePath = nil;
+}
+
+
 - (void)dealloc
 {
+    [_imagePath release];
+    [_activeDownload release];
+    [_imageConnection release];
     [textTitleLabel release];
     [subTitleLabel release];
     [infoImageView release];

@@ -22,17 +22,23 @@
 		6A26934417338B1800C5BA38 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A26933B17338B1800C5BA38 /* UIImageView+AFNetworking.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		6A3DB60417343DEE008C1CEF /* FilterViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A3DB60317343DED008C1CEF /* FilterViewController_iPad.xib */; };
 		6A3DB60617343E23008C1CEF /* DetailAnnotationViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A3DB60517343E23008C1CEF /* DetailAnnotationViewController_iPad.xib */; };
+		6A4CC2BB1736037C0009B9D5 /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A4CC2B71736037C0009B9D5 /* Icon-72.png */; };
+		6A4CC2BC1736037C0009B9D5 /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A4CC2B81736037C0009B9D5 /* Icon-72@2x.png */; };
+		6A4CC2BD1736037C0009B9D5 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A4CC2B91736037C0009B9D5 /* Icon.png */; };
+		6A4CC2BE1736037C0009B9D5 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A4CC2BA1736037C0009B9D5 /* Icon@2x.png */; };
+		6A4CC2C0173610970009B9D5 /* CityViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A4CC2BF173610970009B9D5 /* CityViewCell.xib */; };
 		6A68C1E0172AEDD50015D2F3 /* CityGuideCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */; };
 		6A68C1E3172AF4580015D2F3 /* Places+Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A68C1E2172AF4570015D2F3 /* Places+Custom.m */; };
 		6A8076821734B4FD00AD0CD7 /* DetailAnnotationViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8076811734B4FD00AD0CD7 /* DetailAnnotationViewCell.m */; };
 		6A8076841734B51400AD0CD7 /* DetailAnnotationViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A8076831734B51400AD0CD7 /* DetailAnnotationViewCell.xib */; };
 		6A8076871734C43500AD0CD7 /* UILabel+Custom.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8076861734C43500AD0CD7 /* UILabel+Custom.m */; };
+		6A82779B1735F83D0018951A /* DetailAnnotationViewCell_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A82779A1735F83D0018951A /* DetailAnnotationViewCell_iPad.xib */; };
 		9A03449B172B766C00042F42 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A03449A172B766C00042F42 /* MBProgressHUD.m */; };
 		9A1A7048172B863300024317 /* NSDictionary+EmptyString.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A7047172B863300024317 /* NSDictionary+EmptyString.m */; };
 		9A1A704B172B87FD00024317 /* Places.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A704A172B87FD00024317 /* Places.m */; };
 		9A1A7050172B901200024317 /* FilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A704E172B901200024317 /* FilterViewController.m */; };
 		9A1A7051172B901200024317 /* FilterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9A1A704F172B901200024317 /* FilterViewController.xib */; };
-		9A1A7055172B941800024317 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A7054172B941800024317 /* Reachability.m */; };
+		9A1A7055172B941800024317 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A1A7054172B941800024317 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		9A1A7059172B944400024317 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1A7058172B944400024317 /* CFNetwork.framework */; };
 		9A5281761733A36300576445 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A5281741733A36300576445 /* MobileCoreServices.framework */; };
 		9A5281771733A36300576445 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A5281751733A36300576445 /* SystemConfiguration.framework */; };
@@ -98,6 +104,11 @@
 		6A26933B17338B1800C5BA38 /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
 		6A3DB60317343DED008C1CEF /* FilterViewController_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FilterViewController_iPad.xib; sourceTree = "<group>"; };
 		6A3DB60517343E23008C1CEF /* DetailAnnotationViewController_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailAnnotationViewController_iPad.xib; sourceTree = "<group>"; };
+		6A4CC2B71736037C0009B9D5 /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
+		6A4CC2B81736037C0009B9D5 /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
+		6A4CC2B91736037C0009B9D5 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		6A4CC2BA1736037C0009B9D5 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
+		6A4CC2BF173610970009B9D5 /* CityViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CityViewCell.xib; sourceTree = "<group>"; };
 		6A68C1DE172AEDD50015D2F3 /* CityGuideCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CityGuideCoreDataManager.h; sourceTree = "<group>"; };
 		6A68C1DF172AEDD50015D2F3 /* CityGuideCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CityGuideCoreDataManager.m; sourceTree = "<group>"; };
 		6A68C1E1172AF4570015D2F3 /* Places+Custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Places+Custom.h"; sourceTree = "<group>"; };
@@ -107,6 +118,7 @@
 		6A8076831734B51400AD0CD7 /* DetailAnnotationViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailAnnotationViewCell.xib; sourceTree = "<group>"; };
 		6A8076851734C43500AD0CD7 /* UILabel+Custom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+Custom.h"; sourceTree = "<group>"; };
 		6A8076861734C43500AD0CD7 /* UILabel+Custom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Custom.m"; sourceTree = "<group>"; };
+		6A82779A1735F83D0018951A /* DetailAnnotationViewCell_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailAnnotationViewCell_iPad.xib; sourceTree = "<group>"; };
 		9A034499172B766C00042F42 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		9A03449A172B766C00042F42 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		9A1A7046172B863300024317 /* NSDictionary+EmptyString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+EmptyString.h"; sourceTree = "<group>"; };
@@ -137,7 +149,7 @@
 		9A6C72F417324FA900A9B798 /* starIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = starIcon.png; sourceTree = "<group>"; };
 		9A7C14A7172B9BAE00137792 /* down_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = down_button.png; sourceTree = "<group>"; };
 		9A7C14A8172B9BAE00137792 /* up_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = up_button.png; sourceTree = "<group>"; };
-		9ABFCD1C172A2FED0022A9C4 /* CityGuide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CityGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9ABFCD1C172A2FED0022A9C4 /* City Guide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "City Guide.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ABFCD1F172A2FED0022A9C4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		9ABFCD21172A2FED0022A9C4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9ABFCD23172A2FED0022A9C4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -196,6 +208,7 @@
 				6A8076801734B4FD00AD0CD7 /* DetailAnnotationViewCell.h */,
 				6A8076811734B4FD00AD0CD7 /* DetailAnnotationViewCell.m */,
 				6A8076831734B51400AD0CD7 /* DetailAnnotationViewCell.xib */,
+				6A82779A1735F83D0018951A /* DetailAnnotationViewCell_iPad.xib */,
 			);
 			name = DetailAnnotationPage;
 			sourceTree = "<group>";
@@ -236,6 +249,7 @@
 				9AF13D091732A0D0002F0909 /* FilterViewCell.h */,
 				9AF13D0A1732A0D0002F0909 /* FilterViewCell.m */,
 				9AF13D0C1732A0E3002F0909 /* FilterViewCell.xib */,
+				6A4CC2BF173610970009B9D5 /* CityViewCell.xib */,
 			);
 			name = FilterPage;
 			sourceTree = "<group>";
@@ -279,7 +293,7 @@
 		9ABFCD1D172A2FED0022A9C4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9ABFCD1C172A2FED0022A9C4 /* CityGuide.app */,
+				9ABFCD1C172A2FED0022A9C4 /* City Guide.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -336,6 +350,10 @@
 		9ABFCD45172A32250022A9C4 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				6A4CC2B71736037C0009B9D5 /* Icon-72.png */,
+				6A4CC2B81736037C0009B9D5 /* Icon-72@2x.png */,
+				6A4CC2B91736037C0009B9D5 /* Icon.png */,
+				6A4CC2BA1736037C0009B9D5 /* Icon@2x.png */,
 				6A2693031733636E00C5BA38 /* mylocationbutton.png */,
 				9A6C72F417324FA900A9B798 /* starIcon.png */,
 				9A7C14A7172B9BAE00137792 /* down_button.png */,
@@ -454,7 +472,7 @@
 			);
 			name = CityGuide;
 			productName = CityGuide;
-			productReference = 9ABFCD1C172A2FED0022A9C4 /* CityGuide.app */;
+			productReference = 9ABFCD1C172A2FED0022A9C4 /* City Guide.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -511,6 +529,12 @@
 				6A3DB60417343DEE008C1CEF /* FilterViewController_iPad.xib in Resources */,
 				6A3DB60617343E23008C1CEF /* DetailAnnotationViewController_iPad.xib in Resources */,
 				6A8076841734B51400AD0CD7 /* DetailAnnotationViewCell.xib in Resources */,
+				6A82779B1735F83D0018951A /* DetailAnnotationViewCell_iPad.xib in Resources */,
+				6A4CC2BB1736037C0009B9D5 /* Icon-72.png in Resources */,
+				6A4CC2BC1736037C0009B9D5 /* Icon-72@2x.png in Resources */,
+				6A4CC2BD1736037C0009B9D5 /* Icon.png in Resources */,
+				6A4CC2BE1736037C0009B9D5 /* Icon@2x.png in Resources */,
+				6A4CC2C0173610970009B9D5 /* CityViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,7 +654,7 @@
 				GCC_PREFIX_HEADER = "CityGuide/CityGuide-Prefix.pch";
 				INFOPLIST_FILE = "CityGuide/CityGuide-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "City Guide";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CA05062C-7314-4677-8833-01882D53884C";
 				WRAPPER_EXTENSION = app;
 			};
@@ -643,7 +667,7 @@
 				GCC_PREFIX_HEADER = "CityGuide/CityGuide-Prefix.pch";
 				INFOPLIST_FILE = "CityGuide/CityGuide-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "City Guide";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

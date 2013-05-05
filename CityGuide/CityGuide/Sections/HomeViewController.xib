@@ -60,7 +60,6 @@
 						<string key="NSFrame">{{273, 414}, {35, 35}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -510,6 +509,15 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">sliderTouchUp:</string>
+						<reference key="source" ref="421371183"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">44</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">downUpButtonClicked:</string>
 						<reference key="source" ref="249236756"/>
 						<reference key="destination" ref="372490531"/>
@@ -705,7 +713,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">43</int>
+			<int key="maxID">44</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -717,6 +725,7 @@
 						<string key="downUpButtonClicked:">id</string>
 						<string key="filtersButtonClicked:">id</string>
 						<string key="radiusSliderValueChanged:">id</string>
+						<string key="sliderTouchUp:">id</string>
 						<string key="userLocationButtonClicked:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
@@ -734,6 +743,10 @@
 						</object>
 						<object class="IBActionInfo" key="radiusSliderValueChanged:">
 							<string key="name">radiusSliderValueChanged:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="sliderTouchUp:">
+							<string key="name">sliderTouchUp:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="userLocationButtonClicked:">

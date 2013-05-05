@@ -50,6 +50,7 @@
 - (IBAction)radiusSliderValueChanged:(id)sender;
 - (IBAction)cancelButtonClicked:(id)sender;
 - (IBAction)userLocationButtonClicked:(id)sender;
+- (IBAction)sliderTouchUp:(id)sender;
 
 @end
 
@@ -141,17 +142,12 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    //
-    //  Update location
-    //
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self;
-    [self.locationManager startUpdatingLocation];
-    [self centerOnUserAnimated:YES];
 }
 
 - (void)dealloc
 {
+    [self.locationManager setDelegate:nil];
+    [_locationManager release];
     [_geocoder release];
     [_listFilterArray release];
     [_searchContainView release];
@@ -174,6 +170,7 @@
 
 - (void)viewDidUnload
 {
+    [self setLocationManager:nil];
     [self setHudProgressView:nil];
     [self setSearchContainView:nil];
     [self setSearchBarView:nil];
@@ -194,6 +191,11 @@
 }
 
 #pragma mark - SetupView
+
+- (void)zoomIn:(id)sender
+{
+    [self centerOnUserAnimated:YES];
+}
 
 - (void)setupView
 {
@@ -260,10 +262,17 @@
     //
     //      setup radius slider
     //
-    self.filterMileLabel.text = @"10000";
+    self.filterMileLabel.text = @"100";
     self.radiusSlider.value = 100;
     self.radiusSlider.maximumValue = 100;
     self.radiusSlider.minimumValue = 1;
+    
+    //
+    //  Update location
+    //
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    [self.locationManager startUpdatingLocation];
 }
 
 
@@ -335,6 +344,8 @@
              annotation.subtitle = address;
              annotation.dictAddress = [placemark.addressDictionary retain];
          }];
+        [location release];
+        location = nil;
     }
     else
     {
@@ -350,6 +361,12 @@
 
 - (void)fetchData:(NSData *)responseData
 {
+    if (responseData == nil)
+    {
+        [self.hudProgressView hide:YES];
+        [UIAppDelegate showAlertView:nil andMessage:@"Import data from server error"];
+        return;
+    }
     BOOL flag = NO;
     NSError* error;
     NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:responseData //1
@@ -392,8 +409,11 @@
         [pin release];
     }
     [list release];
+    list = nil;
     
     [self.myMapView addAnnotations:self.listMapAnnotations];
+    [self.listFilterArray release];
+    self.listFilterArray = nil;
 }
 
 - (void)searchWithText:(NSString *)searchText andRadius:(int)radius
@@ -432,6 +452,10 @@
             }
             else
             {
+                if (self.listFilterArray != nil)
+                {
+                    [self.listFilterArray release];
+                }
                 self.listFilterArray = [[NSMutableArray alloc]initWithArray:list];
             }
             
@@ -445,6 +469,27 @@
         }
     }
     [list release];
+}
+
+- (void)addPinToMap:(CLLocationCoordinate2D)coordinate andTitle:(NSString *)title andSubTitle:(NSString *)subTitle
+{
+    PlaceAnnotation *pin    = [[PlaceAnnotation alloc]initWithCoordinate:coordinate andTitle:title andSubTitle:subTitle];
+    [self.myMapView addAnnotation:pin];
+    [pin release];
+    
+    if ([self.myMapView.annotations count] > 0)
+    {
+        NSMutableArray *listPin = [[NSMutableArray alloc] initWithArray:self.myMapView.annotations];
+        for (int i = 0; i < [listPin count]; i++)
+        {
+            id annotation = [listPin objectAtIndex:i];
+            if ([annotation isKindOfClass:[DDAnnotation class]])
+            {
+                [self.myMapView removeAnnotation:annotation];
+            }
+        }
+        [listPin release];
+    }
 }
 
 - (BOOL)centerOnUserAnimated:(BOOL)animated
@@ -505,8 +550,12 @@
 
 - (IBAction)filtersButtonClicked:(id)sender
 {
-    // push filter view
+    //
+    //      push filter view
+    //
     FilterViewController *viewController = [[FilterViewController alloc] init];
+    //[viewController  setModalTransitionStyle:UIModalTransitionStylePartialCurl];
+    //[self.navigationController presentModalViewController:viewController animated:YES];
     [self.navigationController pushViewController:viewController animated:YES];
     [viewController release];
     viewController = nil;
@@ -553,10 +602,12 @@
     NSUInteger index = (NSUInteger)(self.radiusSlider.value + 0.5); // Round the number.
     [self.radiusSlider setValue:index animated:NO];
     self.filterMileLabel.text = [NSString stringWithFormat:@"%d",index];
-    
-    [self.myMapView removeOverlays:self.myMapView.overlays];
-    circle = [MKCircle circleWithCenterCoordinate:self.myMapView.userLocation.coordinate radius:[Utils mileToM:index]];
-    [self.myMapView addOverlay:circle];
+    if ([self checkUserLocationValid])
+    {
+        [self.myMapView removeOverlays:self.myMapView.overlays];
+        circle = [MKCircle circleWithCenterCoordinate:self.myMapView.userLocation.coordinate radius:[Utils mileToM:index]];
+        [self.myMapView addOverlay:circle];
+    }
 }
 
 - (IBAction)cancelButtonClicked:(id)sender
@@ -567,6 +618,12 @@
 - (IBAction)userLocationButtonClicked:(id)sender
 {
     [self centerOnUserAnimated:YES];
+}
+
+- (IBAction)sliderTouchUp:(id)sender
+{
+    [self.myMapView setVisibleMapRect:circle.boundingMapRect animated:YES];
+    [self.myMapView mapRectThatFits:circle.boundingMapRect];
 }
 
 #pragma mark - CLLocationManager delegate
@@ -600,7 +657,8 @@
         // functionality is taken care of by our MKMapView
         self.locationManager.delegate = nil;
         self.locationManager = nil;
-        [self centerOnUserAnimated:YES];
+        //[self centerOnUserAnimated:YES];
+         [self performSelector:@selector(zoomIn:) withObject:nil afterDelay:2.0];
     }
 }
 

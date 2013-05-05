@@ -8,6 +8,7 @@
 
 #import "FilterViewController.h"
 #import "Places+Custom.h"
+
 #import "FilterViewCell.h"
 
 @interface FilterViewController ()
@@ -29,8 +30,6 @@
 @end
 
 @implementation FilterViewController
-
-static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -74,8 +73,14 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:YES];
+    //
+    //      Show navigation bar
+    //
     self.navigationController.navigationBarHidden   = NO;
     self.navigationController.navigationBar.hidden  = NO;
+    //
+    //      Set title bar
+    //
     self.navigationItem.title   = @"Filters";
 }
 
@@ -83,6 +88,9 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 - (void)setupView
 {
+    //
+    //      array alphabet for group section
+    //
     self.alphaBetArray = [NSMutableArray arrayWithObjects:@"A",@"B",@"C",@"D",@"E",@"F",@"G",@"H",@"I",@"K",@"L",@"M",@"N",@"O",@"P",@"R",@"S",@"T",@"U",@"V",@"X",@"Y",@"Z",@"#",nil];
     //
     //      list section in list customer sort by alphabe
@@ -126,6 +134,7 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
                         NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:@"1",@"type",key,@"value", nil];
                         [rowAray addObject:dict];
                         [dict release];
+                        dict = nil;
                     }
                     
                     for (int k = 0; k < [list count]; k++)
@@ -133,8 +142,10 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
                         NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:@"2",@"type",[list objectAtIndex:k],@"value", nil];
                         [rowAray addObject:dict];
                         [dict release];
+                        dict = nil;
                     }
-                }
+                } // end if check list
+                [list release];
             }
         }   // end for J
         [self.placesGroupArray addObject:rowAray];
@@ -142,32 +153,9 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
     }
     [groupByPlaceArray release];
     //
-    //Regiter Xib for table view cell
-    //
-    [self.filterTableView registerNib:[UINib nibWithNibName:@"FilterViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:filterCellIdentifier];
-    
-    [self.searchDisplayController.searchResultsTableView registerNib:[UINib nibWithNibName:@"FilterViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:filterCellIdentifier];
-    
-    //
-    // add right Button
-    //
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc]initWithTitle:@"Add" style:UIBarButtonItemStyleBordered target:self action:@selector(addButonClicked:)];
-    self.navigationItem.rightBarButtonItem = addButton;
-    [addButton release];
-    //
-    //
+    //      Reload data table
     //
     [self.filterTableView reloadData];
-}
-
-#pragma mark - Button Event
-
-- (void)addButonClicked:(id)sender
-{
-        // something here
-    UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:nil message:@"UnderContruction" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles: nil];
-    [alerView show];
-    [alerView release];
 }
 
 #pragma mark - UITableViewDelegate - Datasource
@@ -204,27 +192,41 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 // Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{    
-    FilterViewCell *cell = (FilterViewCell *)[tableView dequeueReusableCellWithIdentifier:filterCellIdentifier];
+{
+    static NSString *filterCellIdentifier   = @"filterViewCellIdentifier";
+    static NSString *cityCellIdentifier     = @"cityCellIdentifier";
     
-    if(cell == nil)
-    {
-        cell = [[FilterViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:filterCellIdentifier];
-        
-    }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    //Places *obj = [self.fullPlacesArray objectAtIndex:indexPath.row];
-    //[cell setupCellWithPlace:obj];
     NSDictionary *dict = nil;
     if (self.isSearch == 1)
     {
-         dict = [self.filterPlacesArray objectAtIndex:indexPath.row];
+        dict = [self.filterPlacesArray objectAtIndex:indexPath.row];
     }
     else
     {
-         dict = [[self.placesGroupArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+        dict = [[self.placesGroupArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     }
     
+    NSString *type = [dict objectForKey:@"type"];
+    if ([type isEqualToString:@"1"]) // this is group of city
+    {
+        FilterViewCell *cell = (FilterViewCell *)[tableView dequeueReusableCellWithIdentifier:cityCellIdentifier];
+        if(cell == nil)
+        {
+            cell = [[[NSBundle mainBundle]loadNibNamed:@"CityViewCell" owner:self options:nil] objectAtIndex:0];
+        }
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [cell setTextTitle:[dict objectForKey:@"value"]];
+        return cell;
+    }
+    //
+    //      if cell is item in city
+    //
+    FilterViewCell *cell = (FilterViewCell *)[tableView dequeueReusableCellWithIdentifier:filterCellIdentifier];
+    if(cell == nil)
+    {
+        cell = [[[NSBundle mainBundle]loadNibNamed:@"FilterViewCell" owner:self options:nil] objectAtIndex:0];
+    }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     [cell setupCellWithDict:dict];
     return cell;
 }
@@ -281,6 +283,7 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
         [label release];
         
         headerView.tintColor = [UIColor colorWithRed:231/255.f green:231/255.f blue:231/255.f alpha:1];
+
         return headerView;
     }
     
@@ -291,8 +294,7 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 
 - (void)filterContentForSearchText:(NSString*)searchText
 {
- 
-    if (self.filterPlacesArray)
+    if (self.filterPlacesArray != nil)
     {
         [self.filterPlacesArray  release];
         self.filterPlacesArray  = nil;
@@ -305,6 +307,7 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
         [self.filterPlacesArray  addObject:dict];
         [dict release];
     }
+    [list release];
 }
 
 #pragma mark - UISearchDisplayController Delegate Methods
@@ -339,7 +342,6 @@ static NSString *filterCellIdentifier = @"filterViewCellIdentifier";
 {
     [self setAlphaBetArray:nil];
     [self setPlacesGroupArray:nil];
-    [self setFilterPlacesArray:nil];
     [self setFilterPlacesArray:nil];
     [self setFilterTableView:nil];
     [super viewDidUnload];

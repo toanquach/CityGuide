@@ -19,4 +19,6 @@
 
 #define kIPhone_Height_Keyboard     216
 
+#define kAppIconSize 42
+
 #endif

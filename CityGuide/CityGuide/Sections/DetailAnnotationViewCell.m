@@ -42,6 +42,7 @@
         infoLabel.text = [dict objectForKey:@"Info"];
         textTextField.hidden = YES;
         [UILabel setHeightForLabel:infoLabel];
+        [UILabel setHeightForLabel:captionLabel];
     }
 }
 

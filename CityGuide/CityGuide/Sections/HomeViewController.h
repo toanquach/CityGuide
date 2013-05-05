@@ -15,4 +15,7 @@
     dispatch_time_t delaySearchUntilQueryUnchangedForTimeOffset;
     MKCircle *circle;
 }
+
+- (void)addPinToMap:(CLLocationCoordinate2D)coordinate andTitle:(NSString *)title andSubTitle:(NSString *)subTitle;
+
 @end
