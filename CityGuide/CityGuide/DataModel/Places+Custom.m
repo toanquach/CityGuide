@@ -159,7 +159,7 @@
         return nil;
     }
     
-    return [list autorelease];
+    return list;
 }
 //
 //      Get all place

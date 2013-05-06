@@ -10,16 +10,15 @@
 #import <MapKit/MapKit.h>
 
 @interface PlaceAnnotation : MKPlacemark
+{
+	CLLocationCoordinate2D coordinate_;
+	NSString *title_;
+	NSString *subtitle_;
+}
 
-@property (nonatomic, assign) CLLocationCoordinate2D coordinate;
-@property (nonatomic, copy) NSString *title;
-@property (nonatomic, copy) NSString *subtitle;
-@property (nonatomic, assign) BOOL hidden;
-@property (nonatomic) double distance; // distance from self to userlocation
-
-+ (MKAnnotationView *)getAnnotationViewForAnnotation:(NSObject<MKAnnotation> *)annotation
-                                     reuseIdentifier:(NSString *)identifier;
-
-- (id)initWithCoordinate:(CLLocationCoordinate2D)mCoordinate andTitle:(NSString *)mTitle andSubTitle:(NSString *)mSubTitle;
+// Re-declare MKAnnotation's readonly property 'coordinate' to readwrite.
+@property (nonatomic, readwrite, assign) CLLocationCoordinate2D coordinate;
+@property (nonatomic, retain) NSString *title;
+@property (nonatomic, retain) NSString *subtitle;
 
 @end

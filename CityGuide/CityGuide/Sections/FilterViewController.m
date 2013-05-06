@@ -156,6 +156,8 @@
     //      Reload data table
     //
     [self.filterTableView reloadData];
+    
+    delaySearchUntilQueryUnchangedForTimeOffset = 0.4 * NSEC_PER_SEC;
 }
 
 #pragma mark - UITableViewDelegate - Datasource
@@ -315,7 +317,15 @@
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
     self.isSearch = 1;
-    [self filterContentForSearchText:searchString];
+    
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delaySearchUntilQueryUnchangedForTimeOffset);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                   {
+                       //NSLog(@"Search With Key: %@",searchText);
+                       [self filterContentForSearchText:searchString];
+                   });
+    
+    //[self filterContentForSearchText:searchString];
     // Return YES to cause the search result table view to be reloaded.
     return YES;
 }

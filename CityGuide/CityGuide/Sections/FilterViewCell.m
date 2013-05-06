@@ -125,8 +125,18 @@
         //
         [loadingView startAnimating];
         self.activeDownload = [[NSMutableData alloc]init];
-        NSURLRequest *imgRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:[place.image stringByReplacingOccurrencesOfString:@": //" withString:@"://"]]];
+        
+        //NSURLRequest *imgRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:[place.image stringByReplacingOccurrencesOfString:@": //" withString:@"://"]]];
+        
+        NSURLRequest *imgRequest = [[NSURLRequest alloc]
+                                 initWithURL: [NSURL URLWithString:[place.image stringByReplacingOccurrencesOfString:@": //" withString:@"://"]]
+                                 cachePolicy:             NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                 timeoutInterval: 60
+                                 ];
+        
         self.imageConnection =  [[NSURLConnection alloc] initWithRequest:imgRequest delegate:self];
+        
+        [imgRequest release];
     }
 }
 
@@ -149,6 +159,8 @@
     // Release the connection now that it's finished
     //
     self.imageConnection = nil;
+    
+    [loadingView stopAnimating];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -186,6 +198,8 @@
     image = nil;
     [self.imagePath release];
     self.imagePath = nil;
+    
+    [loadingView stopAnimating];
 }
 
 

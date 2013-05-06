@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface FilterViewController : UIViewController<UISearchBarDelegate,UISearchDisplayDelegate, UITableViewDataSource, UITableViewDelegate>
+{
+    dispatch_time_t delaySearchUntilQueryUnchangedForTimeOffset;
+}
 
 
 @end

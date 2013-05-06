@@ -10,40 +10,23 @@
 
 @implementation PlaceAnnotation
 
-@synthesize coordinate;
-@synthesize title;
-@synthesize subtitle;
-@synthesize hidden;
-@synthesize distance;
+@synthesize coordinate = coordinate_;
+@synthesize title = title_;
+@synthesize subtitle = subtitle_;
 
-+ (MKAnnotationView *)getAnnotationViewForAnnotation:(NSObject<MKAnnotation> *)annotation
-                                     reuseIdentifier:(NSString *)identifier
-{
-    // This baseclass returns a MKPinAnnotationView as a default
-    // Override this class method if you wish to use a different MKAnnotationView
-    MKPinAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
-                                                               reuseIdentifier:identifier];
-    
-    pin.pinColor = MKPinAnnotationColorRed;
-    
-    return pin;
-}
-
-- (id)initWithCoordinate:(CLLocationCoordinate2D)mCoordinate andTitle:(NSString *)mTitle andSubTitle:(NSString *)mSubTitle
-{
-    if (self = [super init])
+- (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate addressDictionary:(NSDictionary *)addressDictionary {
+	
+	if ((self = [super initWithCoordinate:coordinate addressDictionary:addressDictionary]))
     {
-        self.coordinate = mCoordinate;
-        self.title = mTitle;
-        self.subtitle = mSubTitle;
-    }
-    return self;
+		self.coordinate = coordinate;
+	}
+	return self;
 }
 
 - (void)dealloc
 {
-    [title release];
-    [subtitle release];
+    [title_ release];
+    [subtitle_ release];
     
     [super dealloc];
 }

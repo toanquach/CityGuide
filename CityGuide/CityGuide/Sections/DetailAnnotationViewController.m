@@ -116,7 +116,7 @@ static NSString *detailViewCellIdentifer = @"detailViewCellIdentifer";
     {
         [self.detailTableView registerNib:[UINib nibWithNibName:@"DetailAnnotationViewCell_iPad" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:detailViewCellIdentifer];
     }
-    self.cellArray = [[NSMutableArray alloc] init];
+    self.cellArray = [[[NSMutableArray alloc] init]autorelease];
     //
     //      If have info
     //

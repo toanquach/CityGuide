@@ -33,7 +33,7 @@
 @property (retain, nonatomic) NSMutableArray *listMapAnnotations;
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (retain, nonatomic) IBOutlet UIButton *cancelButton;
-@property (nonatomic, strong) CLGeocoder *geocoder; // support IOS 5
+@property (nonatomic, retain) CLGeocoder *geocoder; // support IOS 5
 @property (retain, nonatomic) IBOutlet UIButton *userLocationButton;
 
 // Method
@@ -51,6 +51,7 @@
 - (IBAction)cancelButtonClicked:(id)sender;
 - (IBAction)userLocationButtonClicked:(id)sender;
 - (IBAction)sliderTouchUp:(id)sender;
+- (IBAction)sliderTouchOutSide:(id)sender;
 
 @end
 
@@ -97,7 +98,7 @@
         //
         //      Add list pin to map view
         //
-        [self generatePlacesToMap];
+        //[self generatePlacesToMap];
         return;
     }
     
@@ -262,8 +263,8 @@
     //
     //      setup radius slider
     //
-    self.filterMileLabel.text = @"100";
-    self.radiusSlider.value = 100;
+    self.filterMileLabel.text = @"10";
+    self.radiusSlider.value = 10;
     self.radiusSlider.maximumValue = 100;
     self.radiusSlider.minimumValue = 1;
     
@@ -288,7 +289,7 @@
     
     if ([self.myMapView.annotations count] > 0)
     {
-        NSMutableArray *listPin = [[NSMutableArray alloc] initWithArray:self.myMapView.annotations];
+        NSMutableArray *listPin = [NSMutableArray arrayWithArray:self.myMapView.annotations];
         for (int i = 0; i < [listPin count]; i++)
         {
             id annotation = [listPin objectAtIndex:i];
@@ -297,7 +298,7 @@
                 [self.myMapView removeAnnotation:annotation];
             }
         }
-        [listPin release];
+        //[listPin release];
     }
     
     //
@@ -307,7 +308,8 @@
 	annotation.title = @"Drag to Move Pin";
 	annotation.subtitle = @"Loading...";
 	[self.self.myMapView addAnnotation:annotation];
-    [self.myMapView selectAnnotation:annotation animated:YES];
+    //[self.myMapView selectAnnotation:annotation animated:YES];
+    [self performSelector:@selector(selectedPin:) withObject:annotation afterDelay:1.0];
     if (!self.geocoder)
     {
         self.geocoder = [[CLGeocoder alloc] init];
@@ -353,6 +355,11 @@
     }
 }
 
+- (void)selectedPin:(PlaceAnnotation *)annotation
+{
+    [self.myMapView selectAnnotation:annotation animated:YES];
+}
+
 - (void)hideSearch:(id)sender
 {
     [self.searchBarView setText:nil];
@@ -389,7 +396,7 @@
         [userDefault synchronize];
     }
 
-    [self generatePlacesToMap];
+    //[self generatePlacesToMap];
     [self.hudProgressView hide:YES];
 }
 
@@ -404,9 +411,9 @@
         CLLocationCoordinate2D coordinate;
         coordinate.latitude     = [obj.latitude doubleValue];
         coordinate.longitude    = [obj.longitude doubleValue];
-        PlaceAnnotation *pin    = [[PlaceAnnotation alloc]initWithCoordinate:coordinate andTitle:obj.text andSubTitle:obj.city];
-        [self.listMapAnnotations addObject:pin];
-        [pin release];
+        //PlaceAnnotation *pin    = [[PlaceAnnotation alloc]initWithCoordinate:coordinate andTitle:obj.text andSubTitle:obj.city];
+        //[self.listMapAnnotations addObject:pin];
+        //[pin release];
     }
     [list release];
     list = nil;
@@ -418,7 +425,7 @@
 
 - (void)searchWithText:(NSString *)searchText andRadius:(int)radius
 {
-    NSMutableArray *list = [[NSMutableArray alloc] initWithArray:[Places searchItemWithKey:searchText]];
+    NSMutableArray *list = [NSMutableArray arrayWithArray:[Places searchItemWithKey:searchText]];
     if (list != nil)
     {
         if ([list count] > 0)
@@ -427,13 +434,13 @@
             {
                 CLLocation *startLocation = [[CLLocation alloc] initWithLatitude:self.myMapView.userLocation.coordinate.latitude longitude:self.myMapView.userLocation.coordinate.longitude];
                 double distanceFilter = [Utils mileToM:[self.filterMileLabel.text intValue]];
-                if (self.listFilterArray == nil)
+                if (self.listMapAnnotations == nil)
                 {
-                    self.listFilterArray = [[NSMutableArray alloc] init];
+                    self.listMapAnnotations = [[NSMutableArray alloc] init];
                 }
                 else
                 {
-                    [self.listFilterArray removeAllObjects];
+                    [self.listMapAnnotations removeAllObjects];
                 }
                 for (int i=0; i<[list count]; i++)
                 {
@@ -443,7 +450,13 @@
                     double distance = [Utils distanceFromTwoPoint:startLocation andEndPoint:endLocation];
                     if (distance <= distanceFilter)
                     {
-                        [self.listFilterArray addObject:obj];
+                        CLLocationCoordinate2D coordinate;
+                        coordinate.latitude     = [obj.latitude doubleValue];
+                        coordinate.longitude    = [obj.longitude doubleValue];
+                        PlaceAnnotation *pin    = [[[PlaceAnnotation alloc] initWithCoordinate:coordinate addressDictionary:nil] autorelease];
+                        pin.title = obj.text;
+                        pin.subtitle = obj.city;
+                        [self.listMapAnnotations addObject:pin];
                     }
                     
                     [endLocation release];
@@ -452,30 +465,54 @@
             }
             else
             {
-                if (self.listFilterArray != nil)
+                if (self.listMapAnnotations != nil)
                 {
-                    [self.listFilterArray release];
+                    [self.listMapAnnotations release];
                 }
-                self.listFilterArray = [[NSMutableArray alloc]initWithArray:list];
+                for (int i=0; i < [list count]; i++)
+                {
+                    Places *obj = [list objectAtIndex:i];
+                    CLLocationCoordinate2D coordinate;
+                    coordinate.latitude     = [obj.latitude doubleValue];
+                    coordinate.longitude    = [obj.longitude doubleValue];
+                    PlaceAnnotation *pin    = [[[PlaceAnnotation alloc] initWithCoordinate:coordinate addressDictionary:nil] autorelease];
+                    pin.title = obj.text;
+                    pin.subtitle = obj.city;
+                    [self.listMapAnnotations addObject:pin];
+                }
+
             }
             
-            if ([self.listFilterArray count] > 0)
+            if ([self.listMapAnnotations count] > 0)
             {
+                if ([self.myMapView.annotations count] > 0)
+                {
+                    NSMutableArray *listPin = [NSMutableArray arrayWithArray:self.myMapView.annotations];
+                    for (int i = 0; i < [listPin count]; i++)
+                    {
+                        id annotation = [listPin objectAtIndex:i];
+                        if ([annotation isKindOfClass:[PlaceAnnotation class]])
+                        {
+                            [self.myMapView removeAnnotation:annotation];
+                        }
+                    }
+                }
+                [self.myMapView addAnnotations:self.listMapAnnotations];
                 [self.view bringSubviewToFront:self.filterTableView];
                 [self.filterTableView reloadData];
             }
-            
-            
         }
     }
-    [list release];
+    //[list release];
+    list = nil;
 }
 
 - (void)addPinToMap:(CLLocationCoordinate2D)coordinate andTitle:(NSString *)title andSubTitle:(NSString *)subTitle
 {
-    PlaceAnnotation *pin    = [[PlaceAnnotation alloc]initWithCoordinate:coordinate andTitle:title andSubTitle:subTitle];
+    PlaceAnnotation *pin    = [[[PlaceAnnotation alloc] initWithCoordinate:coordinate addressDictionary:nil] autorelease];
+    pin.title = title;
+    pin.subtitle = subTitle;
     [self.myMapView addAnnotation:pin];
-    [pin release];
     
     if ([self.myMapView.annotations count] > 0)
     {
@@ -602,12 +639,6 @@
     NSUInteger index = (NSUInteger)(self.radiusSlider.value + 0.5); // Round the number.
     [self.radiusSlider setValue:index animated:NO];
     self.filterMileLabel.text = [NSString stringWithFormat:@"%d",index];
-    if ([self checkUserLocationValid])
-    {
-        [self.myMapView removeOverlays:self.myMapView.overlays];
-        circle = [MKCircle circleWithCenterCoordinate:self.myMapView.userLocation.coordinate radius:[Utils mileToM:index]];
-        [self.myMapView addOverlay:circle];
-    }
 }
 
 - (IBAction)cancelButtonClicked:(id)sender
@@ -622,19 +653,39 @@
 
 - (IBAction)sliderTouchUp:(id)sender
 {
-    [self.myMapView setVisibleMapRect:circle.boundingMapRect animated:YES];
-    [self.myMapView mapRectThatFits:circle.boundingMapRect];
+    if ([self checkUserLocationValid])
+    {
+        [self.myMapView removeOverlays:self.myMapView.overlays];
+        circle = [MKCircle circleWithCenterCoordinate:self.myMapView.userLocation.coordinate radius:[Utils mileToM:[self.filterMileLabel.text intValue]]];
+        [self.myMapView addOverlay:circle];
+        
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delaySearchUntilQueryUnchangedForTimeOffset);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                       {
+                           [self.myMapView setVisibleMapRect:circle.boundingMapRect animated:YES];
+                           [self.myMapView mapRectThatFits:circle.boundingMapRect];
+                       });
+    }
+}
+
+- (IBAction)sliderTouchOutSide:(id)sender
+{
+    if ([self checkUserLocationValid])
+    {
+        [self.myMapView removeOverlays:self.myMapView.overlays];
+        circle = [MKCircle circleWithCenterCoordinate:self.myMapView.userLocation.coordinate radius:[Utils mileToM:[self.filterMileLabel.text intValue]]];
+        [self.myMapView addOverlay:circle];
+        
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delaySearchUntilQueryUnchangedForTimeOffset);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                       {
+                           [self.myMapView setVisibleMapRect:circle.boundingMapRect animated:YES];
+                           [self.myMapView mapRectThatFits:circle.boundingMapRect];
+                       });
+    }
 }
 
 #pragma mark - CLLocationManager delegate
-
-- (void)locationManager:(CLLocationManager *)manager
-	didUpdateToLocation:(CLLocation *)newLocation
-		   fromLocation:(CLLocation *)oldLocation
-{
-    DLog(@"Success: ");
-    [self centerOnUserAnimated:YES];
-}
 
 /*
  *  locationManager:didFailWithError:
@@ -804,10 +855,14 @@
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
-    [[self searchBarView] setText:@""];
+    //[[self searchBarView] setText:@""];
     [self.view bringSubviewToFront:self.blendView];
     [self.view bringSubviewToFront:self.searchBarView];
     [self.searchContainView bringSubviewToFront:self.cancelButton];
+    if([self.searchBarView.text isEqualToString:@""] == FALSE)
+    {
+        [self.view bringSubviewToFront:self.filterTableView];
+    }
     return YES;
 }
 
@@ -823,7 +878,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.listFilterArray count];
+    return [self.listMapAnnotations count];
 }
 
 // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
@@ -837,9 +892,9 @@
     {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier] autorelease];
     }
-    Places *obj = [self.listFilterArray objectAtIndex:indexPath.row];
-    cell.textLabel.text = obj.text;
-    cell.detailTextLabel.text = obj.city;
+    PlaceAnnotation *obj = [self.listMapAnnotations objectAtIndex:indexPath.row];
+    cell.textLabel.text = obj.title;
+    cell.detailTextLabel.text = obj.subtitle;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:14.0];
     cell.detailTextLabel.font = [UIFont italicSystemFontOfSize:14.0];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -852,10 +907,10 @@
 //
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    Places *obj = [self.listFilterArray objectAtIndex:indexPath.row];
+    PlaceAnnotation *obj = [self.listMapAnnotations objectAtIndex:indexPath.row];
     CLLocationCoordinate2D coordinate;
-    coordinate.latitude = [obj.latitude doubleValue];
-    coordinate.longitude = [obj.longitude doubleValue];
+    coordinate.latitude = obj.coordinate.latitude;
+    coordinate.longitude = obj.coordinate.longitude;
     //pan (and zoom) to station
     [self centerMapOnCoordinate:coordinate withSpan:.06 animated:YES];
     [self.searchBarView resignFirstResponder];
