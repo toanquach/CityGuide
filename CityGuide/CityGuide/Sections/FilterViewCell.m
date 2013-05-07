@@ -12,10 +12,6 @@
 
 @interface FilterViewCell()
 
-@property (nonatomic, retain) NSMutableData *activeDownload;
-@property (nonatomic, retain) NSURLConnection *imageConnection;
-@property (nonatomic, retain) NSString *imagePath;
-
 @end
 
 @implementation FilterViewCell
@@ -107,15 +103,16 @@
         if ([fileName isEqualToString:@""] == FALSE)
         {
             
-            self.imagePath = [[NSString alloc] initWithFormat:@"%@/%@/%@",LIBRARYCACHESDIRECTORY,@"Images",fileName];
-            if ([fileManager fileExistsAtPath:self.imagePath])
+            imagePath = [[NSString alloc] initWithFormat:@"%@/%@/%@",LIBRARYCACHESDIRECTORY,@"Images",fileName];
+            if ([fileManager fileExistsAtPath:imagePath])
             {
                 infoImageView.hidden = NO;
-                UIImage *image = [[UIImage alloc] initWithContentsOfFile:self.imagePath];
+                UIImage *image = [[UIImage alloc] initWithContentsOfFile:imagePath];
                 infoImageView.image = image;
                 [image release];
-                [self.imagePath release];
-                self.imagePath = nil;
+                fileName = nil;
+                [imagePath release];
+                imagePath = nil;
                 return;
             }
         }
@@ -124,9 +121,7 @@
         //      if no image cache => call downloading image
         //
         [loadingView startAnimating];
-        self.activeDownload = [[NSMutableData alloc]init];
-        
-        //NSURLRequest *imgRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:[place.image stringByReplacingOccurrencesOfString:@": //" withString:@"://"]]];
+        activeDownload = [[NSMutableData alloc]init];
         
         NSURLRequest *imgRequest = [[NSURLRequest alloc]
                                  initWithURL: [NSURL URLWithString:[place.image stringByReplacingOccurrencesOfString:@": //" withString:@"://"]]
@@ -134,7 +129,7 @@
                                  timeoutInterval: 60
                                  ];
         
-        self.imageConnection =  [[NSURLConnection alloc] initWithRequest:imgRequest delegate:self];
+        imageConnection =  [[NSURLConnection alloc] initWithRequest:imgRequest delegate:self];
         
         [imgRequest release];
     }
@@ -145,7 +140,7 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    [self.activeDownload appendData:data];
+    [activeDownload appendData:data];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
@@ -153,12 +148,17 @@
     //
 	// Clear the activeDownload property to allow later attempts
     //
-    self.activeDownload = nil;
+    [activeDownload release];
+    activeDownload = nil;
     
     //
     // Release the connection now that it's finished
     //
-    self.imageConnection = nil;
+    [imageConnection release];
+    imageConnection = nil;
+    
+    [imagePath release];
+    imagePath = nil;
     
     [loadingView stopAnimating];
 }
@@ -168,7 +168,7 @@
     //
     // Set appIcon and clear temporary data/image
     //
-    UIImage *image = [[UIImage alloc] initWithData:self.activeDownload];
+    UIImage *image = [[UIImage alloc] initWithData:activeDownload];
     infoImageView.hidden = NO;
     if (image.size.width != kAppIconSize || image.size.height != kAppIconSize)
 	{
@@ -184,20 +184,20 @@
         infoImageView.image = image;
     }
     
-    if (self.activeDownload != nil)
+    if (activeDownload != nil)
     {
-        [self.activeDownload writeToFile:self.imagePath atomically:YES];
+        [activeDownload writeToFile:imagePath atomically:YES];
     }
     
-    [self.activeDownload release];
-    self.activeDownload = nil;
+    [activeDownload release];
+    activeDownload = nil;
     // Release the connection now that it's finished
-    [self.imageConnection release];
-    self.imageConnection = nil;
+    [imageConnection release];
+    imageConnection = nil;
     [image release];
     image = nil;
-    [self.imagePath release];
-    self.imagePath = nil;
+    [imagePath release];
+    imagePath = nil;
     
     [loadingView stopAnimating];
 }
@@ -205,9 +205,9 @@
 
 - (void)dealloc
 {
-    [_imagePath release];
-    [_activeDownload release];
-    [_imageConnection release];
+    [imagePath release];
+    [activeDownload release];
+    [imageConnection release];
     [textTitleLabel release];
     [subTitleLabel release];
     [infoImageView release];

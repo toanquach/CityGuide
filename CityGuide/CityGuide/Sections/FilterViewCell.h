@@ -16,7 +16,9 @@
     IBOutlet UILabel *subTitleLabel;
     IBOutlet UIImageView *infoImageView;
     IBOutlet UIActivityIndicatorView *loadingView;
-    
+    NSMutableData *activeDownload;
+    NSURLConnection *imageConnection;
+    NSString *imagePath;
 }
 - (void)setupCellWithDict:(NSDictionary *)dict;
 - (void)setTextTitle:(NSString *)text;

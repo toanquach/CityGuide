@@ -2,7 +2,7 @@
 //  HomeViewController.m
 //  CityGuide
 //
-//  Created by Mac Mini on 4/26/13.
+//  Created by Mac Mini on 4/30/13.
 //  Copyright (c) 2013 Toan.Quach. All rights reserved.
 //
 
@@ -29,11 +29,10 @@
 @property (retain, nonatomic) IBOutlet UIView *blendView;
 @property (retain, nonatomic) IBOutlet UILabel *filterMileLabel;
 @property (retain, nonatomic) IBOutlet UITableView *filterTableView;
-@property (retain, nonatomic) NSMutableArray *listFilterArray;
-@property (retain, nonatomic) NSMutableArray *listMapAnnotations;
+@property (retain, nonatomic) NSMutableArray *mapAnnotationsArray;
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (retain, nonatomic) IBOutlet UIButton *cancelButton;
-@property (nonatomic, retain) CLGeocoder *geocoder; // support IOS 5
+
 @property (retain, nonatomic) IBOutlet UIButton *userLocationButton;
 
 // Method
@@ -149,8 +148,7 @@
 {
     [self.locationManager setDelegate:nil];
     [_locationManager release];
-    [_geocoder release];
-    [_listFilterArray release];
+    [geocoder release];
     [_searchContainView release];
     [_searchBarView release];
     [_myMapView release];
@@ -163,7 +161,7 @@
     [_blendView release];
     [_filterMileLabel release];
     [_filterTableView release];
-    [_listMapAnnotations release];
+    [_mapAnnotationsArray release];
     [_cancelButton release];
     [_userLocationButton release];
     [super dealloc];
@@ -183,9 +181,8 @@
     [self setBlendView:nil];
     [self setFilterMileLabel:nil];
     [self setFilterTableView:nil];
-    [self setListFilterArray:nil];
-    [self setGeocoder:nil];
-    [self setListMapAnnotations:nil];
+    geocoder = nil;
+    [self setMapAnnotationsArray:nil];
     [self setCancelButton:nil];
     [self setUserLocationButton:nil];
     [super viewDidUnload];
@@ -310,9 +307,9 @@
 	[self.self.myMapView addAnnotation:annotation];
     //[self.myMapView selectAnnotation:annotation animated:YES];
     [self performSelector:@selector(selectedPin:) withObject:annotation afterDelay:1.0];
-    if (!self.geocoder)
+    if (!geocoder)
     {
-        self.geocoder = [[CLGeocoder alloc] init];
+        geocoder = [[CLGeocoder alloc] init];
     }
     //
     //      getting address
@@ -320,7 +317,7 @@
     if ([UIAppDelegate reachable])
     {
         CLLocation *location = [[CLLocation alloc]initWithLatitude:annotation.coordinate.latitude longitude:annotation.coordinate.longitude];
-        [self.geocoder reverseGeocodeLocation:location
+        [geocoder reverseGeocodeLocation:location
                             completionHandler:^(NSArray *placemarks, NSError *error)
          {
              
@@ -402,25 +399,7 @@
 
 - (void)generatePlacesToMap
 {
-    self.listMapAnnotations = [[NSMutableArray alloc]init];
-    
-    NSMutableArray *list = [[NSMutableArray alloc] initWithArray:[Places getAllPlaces]];
-    for (int i=0; i < [list count]; i++)
-    {
-        Places *obj = [list objectAtIndex:i];
-        CLLocationCoordinate2D coordinate;
-        coordinate.latitude     = [obj.latitude doubleValue];
-        coordinate.longitude    = [obj.longitude doubleValue];
-        //PlaceAnnotation *pin    = [[PlaceAnnotation alloc]initWithCoordinate:coordinate andTitle:obj.text andSubTitle:obj.city];
-        //[self.listMapAnnotations addObject:pin];
-        //[pin release];
-    }
-    [list release];
-    list = nil;
-    
-    [self.myMapView addAnnotations:self.listMapAnnotations];
-    [self.listFilterArray release];
-    self.listFilterArray = nil;
+   //...
 }
 
 - (void)searchWithText:(NSString *)searchText andRadius:(int)radius
@@ -434,13 +413,13 @@
             {
                 CLLocation *startLocation = [[CLLocation alloc] initWithLatitude:self.myMapView.userLocation.coordinate.latitude longitude:self.myMapView.userLocation.coordinate.longitude];
                 double distanceFilter = [Utils mileToM:[self.filterMileLabel.text intValue]];
-                if (self.listMapAnnotations == nil)
+                if (self.mapAnnotationsArray == nil)
                 {
-                    self.listMapAnnotations = [[NSMutableArray alloc] init];
+                    self.mapAnnotationsArray = [[NSMutableArray alloc] init];
                 }
                 else
                 {
-                    [self.listMapAnnotations removeAllObjects];
+                    [self.mapAnnotationsArray removeAllObjects];
                 }
                 for (int i=0; i<[list count]; i++)
                 {
@@ -456,7 +435,7 @@
                         PlaceAnnotation *pin    = [[[PlaceAnnotation alloc] initWithCoordinate:coordinate addressDictionary:nil] autorelease];
                         pin.title = obj.text;
                         pin.subtitle = obj.city;
-                        [self.listMapAnnotations addObject:pin];
+                        [self.mapAnnotationsArray addObject:pin];
                     }
                     
                     [endLocation release];
@@ -465,9 +444,13 @@
             }
             else
             {
-                if (self.listMapAnnotations != nil)
+                if (self.mapAnnotationsArray == nil)
                 {
-                    [self.listMapAnnotations release];
+                    self.mapAnnotationsArray = [[NSMutableArray alloc] init];
+                }
+                else
+                {
+                    [self.mapAnnotationsArray removeAllObjects];
                 }
                 for (int i=0; i < [list count]; i++)
                 {
@@ -478,12 +461,12 @@
                     PlaceAnnotation *pin    = [[[PlaceAnnotation alloc] initWithCoordinate:coordinate addressDictionary:nil] autorelease];
                     pin.title = obj.text;
                     pin.subtitle = obj.city;
-                    [self.listMapAnnotations addObject:pin];
+                    [self.mapAnnotationsArray addObject:pin];
                 }
 
             }
             
-            if ([self.listMapAnnotations count] > 0)
+            if ([self.mapAnnotationsArray count] > 0)
             {
                 if ([self.myMapView.annotations count] > 0)
                 {
@@ -497,7 +480,7 @@
                         }
                     }
                 }
-                [self.myMapView addAnnotations:self.listMapAnnotations];
+                [self.myMapView addAnnotations:self.mapAnnotationsArray];
                 [self.view bringSubviewToFront:self.filterTableView];
                 [self.filterTableView reloadData];
             }
@@ -723,12 +706,12 @@
             DDAnnotation *annotation = (DDAnnotation *)annotationView.annotation;
             annotation.subtitle = @"Loading...";
             
-            if (!self.geocoder)
+            if (!geocoder)
             {
-                self.geocoder = [[CLGeocoder alloc] init];
+                geocoder = [[CLGeocoder alloc] init];
             }
             CLLocation *location = [[CLLocation alloc]initWithLatitude:annotation.coordinate.latitude longitude:annotation.coordinate.longitude];
-            [self.geocoder reverseGeocodeLocation:location
+            [geocoder reverseGeocodeLocation:location
                                 completionHandler:^(NSArray *placemarks, NSError *error)
             {
                                     
@@ -878,7 +861,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.listMapAnnotations count];
+    return [self.mapAnnotationsArray count];
 }
 
 // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
@@ -892,7 +875,7 @@
     {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier] autorelease];
     }
-    PlaceAnnotation *obj = [self.listMapAnnotations objectAtIndex:indexPath.row];
+    PlaceAnnotation *obj = [self.mapAnnotationsArray objectAtIndex:indexPath.row];
     cell.textLabel.text = obj.title;
     cell.detailTextLabel.text = obj.subtitle;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:14.0];
@@ -907,7 +890,7 @@
 //
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    PlaceAnnotation *obj = [self.listMapAnnotations objectAtIndex:indexPath.row];
+    PlaceAnnotation *obj = [self.mapAnnotationsArray objectAtIndex:indexPath.row];
     CLLocationCoordinate2D coordinate;
     coordinate.latitude = obj.coordinate.latitude;
     coordinate.longitude = obj.coordinate.longitude;

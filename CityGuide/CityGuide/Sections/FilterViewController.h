@@ -11,6 +11,7 @@
 @interface FilterViewController : UIViewController<UISearchBarDelegate,UISearchDisplayDelegate, UITableViewDataSource, UITableViewDelegate>
 {
     dispatch_time_t delaySearchUntilQueryUnchangedForTimeOffset;
+    NSMutableArray *placesGroupArray;
 }
 
 

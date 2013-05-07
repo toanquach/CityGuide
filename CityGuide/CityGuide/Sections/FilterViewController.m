@@ -17,7 +17,7 @@
 
 @property (retain, nonatomic) NSMutableArray *filterPlacesArray;
 
-@property (retain, nonatomic) NSMutableArray *placesGroupArray;
+
 
 @property (nonatomic) int isSearch;
 
@@ -95,7 +95,7 @@
     //
     //      list section in list customer sort by alphabe
     //
-    self.placesGroupArray = [[NSMutableArray alloc] init];
+    placesGroupArray = [[NSMutableArray alloc] init];
     //
     //      get group by country
     //
@@ -148,7 +148,7 @@
                 [list release];
             }
         }   // end for J
-        [self.placesGroupArray addObject:rowAray];
+        [placesGroupArray addObject:rowAray];
         [rowAray release];
     }
     [groupByPlaceArray release];
@@ -170,7 +170,7 @@
         {
             return 1;
         }
-        return [self.placesGroupArray count];
+        return [placesGroupArray count];
     }
     return 1;
 }
@@ -185,7 +185,7 @@
 {
     if (self.isSearch == 0)
     {
-        return [[self.placesGroupArray objectAtIndex:section] count];
+        return [[placesGroupArray objectAtIndex:section] count];
     }
     return [self.filterPlacesArray count];
 }
@@ -205,7 +205,7 @@
     }
     else
     {
-        dict = [[self.placesGroupArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+        dict = [[placesGroupArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     }
     
     NSString *type = [dict objectForKey:@"type"];
@@ -256,7 +256,7 @@
         {
             return 0;
         }
-        if (((NSMutableArray*)[self.placesGroupArray objectAtIndex:section]).count > 0)
+        if (((NSMutableArray*)[placesGroupArray objectAtIndex:section]).count > 0)
         {
             return 20;
         }
@@ -284,7 +284,7 @@
         [headerView addSubview:label];
         [label release];
         
-        headerView.tintColor = [UIColor colorWithRed:231/255.f green:231/255.f blue:231/255.f alpha:1];
+        //headerView.tintColor = [UIColor colorWithRed:231/255.f green:231/255.f blue:231/255.f alpha:1];
 
         return headerView;
     }
@@ -305,9 +305,9 @@
     NSMutableArray *list = [[NSMutableArray alloc] initWithArray:[Places searchItemWithKey:searchText]];
     for (int i = 0; i < [list count]; i++)
     {
-        NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:@"2",@"type",[list objectAtIndex:i],@"value", nil];
+        NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"2",@"type",[list objectAtIndex:i],@"value", nil];
         [self.filterPlacesArray  addObject:dict];
-        [dict release];
+        dict = nil;
     }
     [list release];
 }
@@ -318,14 +318,14 @@
 {
     self.isSearch = 1;
     
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delaySearchUntilQueryUnchangedForTimeOffset);
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
-                   {
-                       //NSLog(@"Search With Key: %@",searchText);
-                       [self filterContentForSearchText:searchString];
-                   });
+//    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delaySearchUntilQueryUnchangedForTimeOffset);
+//    dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+//                   {
+//                       //NSLog(@"Search With Key: %@",searchText);
+//                       [self filterContentForSearchText:searchString];
+//                   });
     
-    //[self filterContentForSearchText:searchString];
+    [self filterContentForSearchText:searchString];
     // Return YES to cause the search result table view to be reloaded.
     return YES;
 }
@@ -342,7 +342,7 @@
 - (void)dealloc
 {
     [_alphaBetArray release];
-    [_placesGroupArray release];
+    [placesGroupArray release];
     [_filterPlacesArray release];
     [_filterTableView release];
     [super dealloc];
@@ -351,7 +351,7 @@
 - (void)viewDidUnload
 {
     [self setAlphaBetArray:nil];
-    [self setPlacesGroupArray:nil];
+    placesGroupArray = nil;
     [self setFilterPlacesArray:nil];
     [self setFilterTableView:nil];
     [super viewDidUnload];

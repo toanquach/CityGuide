@@ -42,4 +42,5 @@
 //      Get list place in city
 //
 + (NSArray *)selectItemByCity:(NSString *)cityName;
+
 @end

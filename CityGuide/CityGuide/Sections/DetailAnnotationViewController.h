@@ -10,6 +10,10 @@
 #import <MapKit/MapKit.h>
 
 @interface DetailAnnotationViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
+{
+    NSMutableArray *cellArray;
+    NSString *addressStr;
+}
 
 @property (retain, nonatomic) NSDictionary *dictAddress;
 @property (nonatomic) CLLocationCoordinate2D coordinate;
